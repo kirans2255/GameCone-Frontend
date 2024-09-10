@@ -23,7 +23,7 @@ const ProtectedRouteAdmin = ({ children }) => {
   if (!isAuthorized) {
     return null; // Or a loading spinner
   }
-
+  
   // Render the children when authorized
   return <>{children}</>;
 };

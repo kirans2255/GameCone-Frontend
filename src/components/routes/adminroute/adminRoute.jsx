@@ -1,24 +1,42 @@
-// eslint-disable-next-line no-unused-vars
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminLoginPage from '../../../pages/adminpage/adminpage'
+// AdminRoutes.jsx
+// import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AdminLoginPage from '../../../pages/adminpage/adminpage';
 import AdminDashboard from "../../../pages/adminpage/dashboard";
 import CategoryPage from '../../../pages/adminpage/category';
-import UserPage from '../../../pages/adminpage/user'
-// import AdminLayout from '../'
+import UserPage from '../../../pages/adminpage/user';
+import ProtectRoute from '../../../components/layout/ProtectRoute';
 
 export default function AdminRoutes() {
     return (
-        <div>
-            <Router>
-                <Routes>
-                    <Route path = '/admin/login' element={<AdminLoginPage />}>
-                    </Route>
-                    <Route path = '/admin/dashboard' element={<AdminDashboard />}></Route> 
-                    <Route path = '/admin/category' element = {<CategoryPage />}></Route>
-                    <Route path = '/admin/user' element={<UserPage/>}></Route> 
-                </Routes>
-            </Router>
-        </div>
-    )
+        <Router>
+            <Routes>
+                <Route path='/admin/login' element={<AdminLoginPage />} />
+                <Route 
+                    path='/admin/dashboard' 
+                    element={
+                        // <ProtectRoute>
+                            <AdminDashboard />
+                        // </ProtectRoute>
+                    } 
+                />
+                <Route 
+                    path='/admin/category' 
+                    element={
+                        <ProtectRoute>
+                            <CategoryPage />
+                        </ProtectRoute>
+                    } 
+                />
+                <Route 
+                    path='/admin/user' 
+                    element={
+                        <ProtectRoute>
+                            <UserPage />
+                        </ProtectRoute>
+                    } 
+                />
+            </Routes>
+        </Router>
+    );
 }

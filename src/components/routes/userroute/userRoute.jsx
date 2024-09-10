@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import UserLoginPage from '../../../pages/userpage/signuppage'
 import GamecamoPage from "../../../pages/userpage/home";
 import Login from '../../../pages/userpage/login'
+// import ProtectRoute from '../../../components/layout/ProtectRoute'
 // import AdminLayout from '../'
 
 export default function UserRoutes() {
@@ -26,14 +27,16 @@ export default function UserRoutes() {
 
     return (
         <div>
-            <Router>
-                <Routes>
-                    <Route path = '/signup' element={<UserLoginPage />}>
-                    </Route>
-                    <Route path = '/home' element = {<GamecamoPage />}></Route>
-                    <Route path = '/login' element = {<Login />}></Route>
-                </Routes>
-            </Router>
+            {/* <ProtectRoute> */}
+                <Router>
+                    <Routes>
+                        <Route path='/signup' element={<UserLoginPage />}>
+                        </Route>
+                        <Route path='/home' element={<GamecamoPage />}></Route>
+                        <Route path='/login' element={<Login />}></Route>
+                    </Routes>
+                </Router>
+            {/* </ProtectRoute> */}
         </div>
     )
 }
