@@ -13,7 +13,7 @@ const AdminDashboard = () => {
             Navigate('/admin/login')
         }
     },[Navigate])
-
+    
     const handleLogout = () => {
         localStorage.removeItem('token');
         Navigate('/admin/login');
@@ -29,7 +29,7 @@ const AdminDashboard = () => {
             <li><Link to="/admin/dashboard" className="flex items-center p-4 hover:bg-gray-700"><FaHome className="mr-3" /> Overview</Link></li>
             <li><Link to="/consoles" className="flex items-center p-4 hover:bg-gray-700"><FaGamepad className="mr-3" /> Consoles</Link></li>
             <li><Link to="/admin/orders" className="flex items-center p-4 hover:bg-gray-700"><FaClipboardList className="mr-3" /> Orders</Link></li>
-            <li><Link to="/users" className="flex items-center p-4 hover:bg-gray-700"><FaUsers className="mr-3" /> Users</Link></li>
+            <li><Link to="/admin/user" className="flex items-center p-4 hover:bg-gray-700"><FaUsers className="mr-3" /> Users</Link></li>
             <li><Link to="/admin/category" className="flex items-center p-4 hover:bg-gray-700"><FaChartLine className="mr-3" /> Category</Link></li>
             <li><Link to="/settings" className="flex items-center p-4 hover:bg-gray-700"><FaCog className="mr-3" /> Settings</Link></li>
           </ul>

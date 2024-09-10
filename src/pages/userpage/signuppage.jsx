@@ -4,6 +4,8 @@ import { FaGoogle, FaPhoneAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 // import { Typography, Box } from '@mui/material';
 import Signup from '../../services/user/signup';
+import GoogleSignIn from './google';
+
 
 const SignupForm = () => {
 
@@ -157,18 +159,17 @@ const SignupForm = () => {
                   <button
                     type="button"
                     className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
-                  z
-                  >
-                    <FaGoogle className="mr-2 h-5 w-5" />
-                    Sign in with Google
-                  </button>
-                  <button
+                  > 
+                    <GoogleSignIn />
+                    {/* <FaGoogle className="mr-2 h-5 w-5" /> */}
+                  </button> 
+                  {/* <button
                     type="button"
                     className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
                   >
                     <FaPhoneAlt className="mr-2 h-5 w-5" />
                     Sign in with OTP
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="text-sm text-center text-white">

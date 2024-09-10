@@ -1,9 +1,10 @@
 /* eslint-disable react/no-unescaped-entities */
-// import React from 'react';
+import React from 'react';
 import { Formik } from 'formik';
-import { FaGoogle, FaPhoneAlt } from 'react-icons/fa';
+import { FaGoogle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-// import { Typography, Box } from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Login from '../../services/user/login';
 import GoogleSignIn from './google';
 
@@ -13,7 +14,6 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen flex">
-
       {/* Left side: Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-black text-white p-8">
         <div className="max-w-md w-full space-y-8">
@@ -42,19 +42,22 @@ const LoginForm = () => {
             }}
             onSubmit={async (values, { setSubmitting, setErrors }) => {
               try {
-                const response = await Login(values)
-                console.log("Respons :", response);
+                const response = await Login(values);
+                console.log("Response :", response);
 
                 if (response && response.token) {
                   localStorage.setItem('token', response.token);
-
-                  navigate('/home')
+                  navigate('/home');
                 }
               } catch (error) {
-                setErrors({
-                  email: error.message.includes('User Not Found') ? 'User Not Found' : '',
-                  password: error.message.includes('Invalid Password') ? 'Invalid Password' : ''
-                })
+                if (error.message.includes('User is Blocked')) {
+                  toast.error('Your account has been blocked. ');
+                } else {
+                  setErrors({
+                    email: error.message.includes('User Not Found') ? 'User Not Found' : '',
+                    password: error.message.includes('Invalid Password') ? 'Invalid Password' : ''
+                  });
+                }
               }
               setSubmitting(false);
             }}
@@ -107,17 +110,17 @@ const LoginForm = () => {
                 </div>
 
                 <div className="flex items-center">
-                  <input
+                  {/* <input
                     type="checkbox"
                     name="terms"
                     id="terms"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                  />
-                  <label htmlFor="terms" className="ml-2 block text-sm text-white">
+                  /> */}
+                  {/* <label htmlFor="terms" className="ml-2 block text-sm text-white">
                     I agree to the terms & policy
-                  </label>
+                  </label> */}
                 </div>
                 {errors.terms && touched.terms && (
                   <div className="text-red-500 text-sm mt-1">{errors.terms}</div>
@@ -142,14 +145,6 @@ const LoginForm = () => {
                     type="button"
                     className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
                   > <GoogleSignIn />
-                    
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
-                  >
-                    <FaPhoneAlt className="mr-2 h-5 w-5" />
-                    Sign in with OTP
                   </button>
                 </div>
 
@@ -168,8 +163,11 @@ const LoginForm = () => {
       {/* Right side: Image */}
       <div className="hidden md:block w-1/2 bg-cover bg-center" style={{ backgroundImage: 'url(https://img.freepik.com/free-photo/cartoon-man-wearing-vr-glasses_23-2151136835.jpg)' }}>
       </div>
+
+      {/* Toast container */}
+      <ToastContainer />
     </div>
-  )
+  );
 };
 
 export default LoginForm;
