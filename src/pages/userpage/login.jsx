@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
-import React from 'react';
+// import React from 'react';
 import { Formik } from 'formik';
-import { FaGoogle } from 'react-icons/fa';
+// import { FaGoogle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -34,9 +34,6 @@ const LoginForm = () => {
               }
               if (!values.password) {
                 errors.password = 'Password is required';
-              }
-              if (!values.terms) {
-                errors.terms = 'You must agree to the terms and policy';
               }
               return errors;
             }}

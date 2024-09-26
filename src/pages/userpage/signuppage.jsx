@@ -1,6 +1,5 @@
 // import React from 'react';
 import { Formik } from 'formik';
-import { FaGoogle, FaPhoneAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 // import { Typography, Box } from '@mui/material';
 import Signup from '../../services/user/signup';

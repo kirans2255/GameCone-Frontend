@@ -5,13 +5,17 @@ import AdminLoginPage from '../../../pages/adminpage/adminpage';
 import AdminDashboard from "../../../pages/adminpage/dashboard";
 import CategoryPage from '../../../pages/adminpage/category';
 import UserPage from '../../../pages/adminpage/user';
-import ProtectRoute from '../../../components/layout/ProtectRoute';
+import ProductPage from '../../../pages/adminpage/product'
+import Layoutside from '../../layout/layoutside';
+// import ProtectRoute from '../../../components/layout/ProtectRoute';
 
 export default function AdminRoutes() {
     return (
-        <Router>
+        <Router >
             <Routes>
                 <Route path='/admin/login' element={<AdminLoginPage />} />
+                <Route element = {<Layoutside />} >
+
                 <Route 
                     path='/admin/dashboard' 
                     element={
@@ -23,19 +27,28 @@ export default function AdminRoutes() {
                 <Route 
                     path='/admin/category' 
                     element={
-                        <ProtectRoute>
+                        // <ProtectRoute>
                             <CategoryPage />
-                        </ProtectRoute>
+                        // </ProtectRoute>
                     } 
                 />
                 <Route 
                     path='/admin/user' 
                     element={
-                        <ProtectRoute>
+                        // <ProtectRoute>
                             <UserPage />
-                        </ProtectRoute>
+                        // </ProtectRoute>
                     } 
                 />
+                <Route 
+                    path='/admin/product' 
+                    element={
+                        // <ProtectRoute>
+                            <ProductPage />
+                        // </ProtectRoute>
+                    } 
+                />
+                 </Route>
             </Routes>
         </Router>
     );

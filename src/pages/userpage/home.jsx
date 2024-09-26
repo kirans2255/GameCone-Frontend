@@ -68,7 +68,127 @@ const GamecamoPage = () => {
           <button className="px-6 py-2 md:px-8 md:py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600">See All</button>
         </div>
       </section>
+
+      <div className="font-sans">
+        {/* Racing Wheel Section */}
+        <section className="bg-black text-white p-8 flex flex-col md:flex-row items-center justify-between">
+          <div className="md:w-1/2">
+            <img
+              src="https://jvgelectronics.in/storage/product/1709371341img1.png"
+              alt="Racing Wheel"
+              className="max-w-full h-auto"
+            />
+          </div>
+          <div className="md:w-1/2 mt-4 md:mt-0 text-center md:text-left">
+            <h2 className="text-4xl font-bold">
+              Ultimate Driving Experience: Rent a Pro Racing Wheel
+            </h2>
+            <p className="mt-4 text-lg">
+              A gaming racing wheel provides a realistic driving experience by mimicking the feel of steering, accelerating, and braking in racing games. With features like force feedback and pedal sets, it enhances immersion and control for gamers seeking a more authentic racing simulation.<br /> <br /> <br />This racing wheel is available for rent . Experience realistic driving without the commitment!
+            </p>
+            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded mt-6">
+              Rent Now
+            </button>
+          </div>
+        </section>
+
+        {/* Gaming Bundle Section */}
+        <section className="bg-cover bg-center text-white py-56"
+          style={{ backgroundImage: "url('https://img.freepik.com/premium-photo/retro-wave-gamepad-cyberpunk-style_74102-5513.jpg')" }}>
+          <div className="text-center">
+            <h2 className="text-4xl font-bold mb-20">
+              Ultimate Gaming Bundle: PS4 Console with VR and More
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto mb-40">
+              Experience immersive gaming with a PS4 console, a selection of PC Game DVDs, and a VR setup. Dive into action-packed adventures and explore virtual worlds like never before.
+            </p>
+            <div className="flex justify-center gap-8 flex-wrap">
+              <div className="text-center">
+                <div className="bg-white text-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2">
+                  🎮
+                </div>
+                <p>Mobile Game Development</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white text-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2">
+                  💻
+                </div>
+                <p>PC Game Development</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white text-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2">
+                  🕹️
+                </div>
+                <p>VR Games</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white text-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2">
+                  🎮
+                </div>
+                <p>PS5 Game Development</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="bg-black text-white py-16">
+          <div className="max-w-6xl mx-auto text-center">
+            <h3 className="text-3xl font-bold mb-8">
+              Trusted by Thousands of Happy Customers
+            </h3>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-gray-800 p-8 rounded">
+                <p className="text-xl italic mb-4">
+                  "An amazing UI for any gamer..."
+                </p>
+                <div className="flex items-center justify-center">
+                  <div className="rounded-full bg-white h-12 w-12 mr-4"></div>
+                  <p className="font-bold">Rishab Shetty</p>
+                </div>
+              </div>
+              <div className="bg-gray-800 p-8 rounded">
+                <p className="text-xl italic mb-4">
+                  "The real-time console feedback is stunning..."
+                </p>
+                <div className="flex items-center justify-center">
+                  <div className="rounded-full bg-white h-12 w-12 mr-4"></div>
+                  <p className="font-bold">Yasika Chitaly</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer Section */}
+        <footer className="bg-gray-900 text-gray-400 py-12">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between">
+            <div className="text-center md:text-left mb-6 md:mb-0">
+              <h4 className="text-2xl font-bold text-white mb-2">CAMOS LAB</h4>
+              <p className="text-sm">
+                Lorem ipsum is simply dummy text of the printing and typesetting industry.
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="text-sm mb-4 md:mb-0">
+                <h5 className="text-white font-bold mb-2">About</h5>
+                <p>About Us</p>
+                <p>Projects</p>
+                <p>Contact</p>
+              </div>
+              <div className="text-sm">
+                <h5 className="text-white font-bold mb-2">Contact</h5>
+                <p>Lorem ipsum</p>
+                <p>dummy text</p>
+                <p>+123-456-7890</p>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
+
+
   );
 };
 

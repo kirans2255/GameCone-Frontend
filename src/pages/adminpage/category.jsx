@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FaHome, FaGamepad, FaClipboardList, FaUsers, FaChartLine, FaCog, FaSignOutAlt, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import {  FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { addCategory, getCategories, deleteCategory, editCategory } from '../../services/admin/login';
 
 const Modal = ({ isOpen, onClose, onSave, category, handleInputChange, handleFileChange, isEditing }) => {
@@ -88,29 +88,29 @@ const CategoryPage = () => {
     });
   };
 
-  // const handleAddCategory = async () => {
-  //   try {
-  //     const result = await addCategory(newCategory);
-  //     if (result.success) {
-  //       if (isEditing) {
-  //         const updatedCategories = categories.map((category, index) =>
-  //           index === editIndex ? result.category : category
-  //         );
-  //         setCategories(updatedCategories);
-  //         setIsEditing(false);
-  //         setEditIndex(null);
-  //       } else {
-  //         setCategories([...categories, result.category]);
-  //       }
-  //       setNewCategory({ name: '', image: null });
-  //       setIsModalOpen(false);
-  //     } else {
-  //       console.error(result.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error adding category:', error.message);
-  //   }
-  // };
+  const handleAddCategory = async () => {
+    try {
+      const result = await addCategory(newCategory);
+      if (result.success) {
+        if (isEditing) {
+          const updatedCategories = categories.map((category, index) =>
+            index === editIndex ? result.category : category
+          );
+          setCategories(updatedCategories);
+          setIsEditing(false);
+          setEditIndex(null);
+        } else {
+          setCategories([...categories, result.category]);
+        }
+        setNewCategory({ name: '', image: null });
+        setIsModalOpen(false);
+      } else {
+        console.error(result.message);
+      }
+    } catch (error) {
+      console.error('Error adding category:', error.message);
+    }
+  };
 
   const DeleteModal = ({ isOpen, onClose, onDelete, category }) => {
     if (!isOpen) return null;
@@ -165,20 +165,22 @@ const CategoryPage = () => {
   };
 
 
-  const handleSaveCategory = async (formData) => {
+  const handleSaveCategory = async () => {
     try {
       if (isEditing) {
         // Edit the category
+        console.log('newCategory:', newCategory);
         const result = await editCategory(editCategoryId, newCategory.name, newCategory.image);
-        console.log("result :",result);
-        
+        fetchCategories();
+        console.log("result :", result);
+
         if (result.success) {
           const updatedCategories = categories.map((category, index) =>
             index === editIndex ? result.category : category
           );
           setCategories(updatedCategories);
         }
-      } 
+      }
       setNewCategory({ name: '', image: null });
       setIsModalOpen(false);
       setIsEditing(false);
@@ -222,27 +224,19 @@ const CategoryPage = () => {
     setEditIndex(null);
   };
 
+  const Navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      Navigate('/admin/login')
+    }
+  }, [Navigate])
+
+
+
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-gray-100">
-      <div className="w-full lg:w-64 bg-gray-800 text-white flex flex-col">
-        <div className="p-4 text-xl font-bold">Admin Dashboard</div>
-        <nav className="flex-1">
-          <ul>
-            <li><Link to="/admin/dashboard" className="flex items-center p-4 hover:bg-gray-700"><FaHome className="mr-3" /> Overview</Link></li>
-            <li><Link to="/consoles" className="flex items-center p-4 hover:bg-gray-700"><FaGamepad className="mr-3" /> Consoles</Link></li>
-            <li><Link to="/admin/orders" className="flex items-center p-4 hover:bg-gray-700"><FaClipboardList className="mr-3" /> Orders</Link></li>
-            <li><Link to="/admin/user" className="flex items-center p-4 hover:bg-gray-700"><FaUsers className="mr-3" /> Users</Link></li>
-            <li><Link to="/admin/category" className="flex items-center p-4 hover:bg-gray-700"><FaChartLine className="mr-3" /> Category</Link></li>
-            <li><Link to="/settings" className="flex items-center p-4 hover:bg-gray-700"><FaCog className="mr-3" /> Settings</Link></li>
-          </ul>
-        </nav>
-
-        <div className="p-4">
-          <button className="w-full flex items-center justify-center p-4 bg-red-600 hover:bg-red-700 text-white rounded">
-            <FaSignOutAlt className="mr-3" /> Logout
-          </button>
-        </div>
-      </div>
 
       <div className="flex-1 p-6">
         <h1 className="text-2xl font-bold mb-4">Manage Categories</h1>
@@ -292,7 +286,7 @@ const CategoryPage = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        onSave={handleSaveCategory}
+        onSave={isEditing ? handleSaveCategory : handleAddCategory}
         category={newCategory}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
