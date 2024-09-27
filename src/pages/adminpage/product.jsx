@@ -241,7 +241,7 @@ const ProductPage = () => {
         <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"><FaPlus className="mr-2" /> Add Product</button>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {products.map((product, index) => (
-            <div key={product._id} className="bg-white border rounded-lg shadow-md p-4">
+            <div key={product._id} className="bg-white border rounded-lg shadow-md p-4 w-[480px]">
               <h3 className="text-lg font-semibold">{product.name}</h3>
               <p className="text-gray-600">Price: ₹{product.price}</p>
               <p className="text-gray-600">Edition: {product.edition}</p>
@@ -251,14 +251,14 @@ const ProductPage = () => {
                   <img
                     src={product.images.url}
                     alt={product.productName}
-                    className="w-full h-64 object-cover rounded"
-                  />
+                    className="w-96 h-64 object-cover rounded"
+                  />    
                 ) : (
                   product.image && (
                     <img
                       src={URL.createObjectURL(product.images.url)}
                       alt={product.productName}
-                      className="w-full h-64 object-cover rounded"
+                      className="w-screen h-64 object-cover rounded"
                     />
                   )
                 )}

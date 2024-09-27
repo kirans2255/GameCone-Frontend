@@ -163,3 +163,34 @@ export const editProduct = async (id, name,price,edition,category, image) => {
         throw new Error('Error editing product: ' + error.message);
     }
 }
+
+export const getCoupon = async() => {
+    try {
+        const response = await instance.get('/admin/coupon');
+        return response.data;
+    } catch (error) {
+        throw new Error('Error fetching Coupon: ' + error.message);
+    }
+}
+
+export const addCoupon = async(values) => {
+    try {
+        console.log("val",values);
+
+        const response = await instance.post('/admin/addcoupon', values, {
+            withCredentials : true
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Error adding coupon: ' + error.message);
+    }
+}
+
+export const deleteCoupon = async (id) => {
+    try {
+        const response = await instance.delete(`/admin/deleteCoupon/${id}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Error deleting category: ' + error.message);
+    }
+};

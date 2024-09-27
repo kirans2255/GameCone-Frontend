@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa'
+import { getProduct } from '../../services/admin/login';
 
 const GamecamoPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,6 +9,21 @@ const GamecamoPage = () => {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  const [products, setProducts] = useState([])
+
+  const fetchProducts = async () => {
+    try {
+      const result = await getProduct();
+      setProducts(result.products);
+    } catch (error) {
+      console.error('Error fetching products:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <div className="bg-black text-white font-sans">
@@ -47,23 +63,18 @@ const GamecamoPage = () => {
       <section className="px-4 md:px-8 py-2">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Currently Trending Games</h2>
         <div className="flex flex-wrap justify-center md:justify-between">
-          <div className="w-1/2 md:w-1/5 p-2">
-            <img src="https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png" alt="GTA V" className="rounded-lg shadow-lg" />
-            <h3 className="mt-4 text-center text-sm md:text-xl">GTA V</h3>
-          </div>
-          <div className="w-1/2 md:w-1/5 p-2">
-            <img src="https://image.api.playstation.com/cdn/UP1004/CUSA03041_00/Hpl5MtwQgOVF9vJqlfui6SDB5Jl4oBSq.png" alt="Red Dead Redemption 2" className="rounded-lg shadow-lg" />
-            <h3 className="mt-4 text-center text-sm md:text-xl">Red Dead Redemption 2</h3>
-          </div>
-          <div className="w-1/2 md:w-1/5 p-2">
-            <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Cyberpunk_2077_box_art.jpg" alt="Cyberpunk 2077" className="rounded-lg shadow-lg" />
-            <h3 className="mt-4 text-center text-sm md:text-xl">Cyberpunk 2077</h3>
-          </div>
-          <div className="w-1/2 md:w-1/5 p-2">
-            <img src="https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-881130-52.jpg" alt="FIFA 23" className="rounded-lg shadow-lg" />
-            <h3 className="mt-4 text-center text-sm md:text-xl">EA Sports FIFA 23</h3>
-          </div>
+          {products.map((product) => (
+            <div key={product.id} className="w-1/2 md:w-1/6 ">
+              <img
+                src={product.images.url}
+                alt={product.name}
+                className="h-full w-full object-cover rounded-lg shadow-lg" // Adjust the height as needed
+              />
+              <h3 className="mt-4 text-center text-sm md:text-xl">{product.name}</h3>
+            </div>
+          ))}
         </div>
+
         <div className="flex justify-center mt-8">
           <button className="px-6 py-2 md:px-8 md:py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600">See All</button>
         </div>

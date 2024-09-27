@@ -7,6 +7,7 @@ import CategoryPage from '../../../pages/adminpage/category';
 import UserPage from '../../../pages/adminpage/user';
 import ProductPage from '../../../pages/adminpage/product'
 import Layoutside from '../../layout/layoutside';
+import CouponPage from '../../../pages/adminpage/coupon'
 // import ProtectRoute from '../../../components/layout/ProtectRoute';
 
 export default function AdminRoutes() {
@@ -45,6 +46,14 @@ export default function AdminRoutes() {
                     element={
                         // <ProtectRoute>
                             <ProductPage />
+                        // </ProtectRoute>
+                    } 
+                />
+                <Route 
+                    path='/admin/coupons' 
+                    element={
+                        // <ProtectRoute>
+                            <CouponPage />
                         // </ProtectRoute>
                     } 
                 />
