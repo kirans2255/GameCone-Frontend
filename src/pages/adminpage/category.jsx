@@ -272,10 +272,10 @@ const CategoryPage = () => {
                     )
                   )}
                 </div>
-                <div className="text-center font-semibold">{category.CategoryName}</div>
+                <div className="text-center font-semibold text-xl">{category.CategoryName}</div>
                 <div className="flex justify-center mt-4">
-                  <button onClick={() => handleEditCategory(index, category)} className="text-yellow-500 mr-4"><FaEdit /></button>
-                  <button onClick={() => handleOpenDeleteModal(category)} className="text-red-500"><FaTrash /></button>
+                  <button onClick={() => handleEditCategory(index, category)} className="text-blue-500 mr-4"><FaEdit size={20} /></button>
+                  <button onClick={() => handleOpenDeleteModal(category)} className="text-red-500"><FaTrash size={20} /></button>
                 </div>
               </li>
             ))}

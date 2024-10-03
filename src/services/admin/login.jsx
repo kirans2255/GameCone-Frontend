@@ -59,7 +59,7 @@ export const deleteCategory = async (id) => {
 
 export const editCategory = async (id, name, image) => {
     const formData = new FormData();
-    formData.append('CategoryName', name); 
+    formData.append('CategoryName', name);
     formData.append('CategoryImage', image);
 
     try {
@@ -109,14 +109,15 @@ export const addProduct = async (values) => {
         const formData = new FormData();
         formData.append('name', values.name);
         formData.append('price', values.price);
-        formData.append('edition',values.edition)
-        formData.append('category',values.category)
-        formData.append('images',values.image)
+        formData.append('edition', values.edition)
+        formData.append('category', values.category)
+        formData.append('quantity', values.quantity)
+        formData.append('images', values.image)
 
         const response = await instance.post('/admin/addProduct', formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+               'Content-Type': 'multipart/form-data',
+            }, 
         });
         return response.data;
     } catch (error) {
@@ -144,12 +145,13 @@ export const deleteProduct = async (id) => {
 };
 
 
-export const editProduct = async (id, name,price,edition,category, image) => {
+export const editProduct = async (id, name, price, edition, category,quantity ,image) => {
     const formData = new FormData();
-    formData.append('name', name); 
-    formData.append('price', price); 
-    formData.append('edition', edition); 
-    formData.append('category',category)
+    formData.append('name', name);
+    formData.append('price', price);
+    formData.append('edition', edition);
+    formData.append('category', category)
+    formData.append('quantity', quantity)
     formData.append('images', image);
 
     try {
@@ -164,7 +166,7 @@ export const editProduct = async (id, name,price,edition,category, image) => {
     }
 }
 
-export const getCoupon = async() => {
+export const getCoupon = async () => {
     try {
         const response = await instance.get('/admin/coupon');
         return response.data;
@@ -173,12 +175,12 @@ export const getCoupon = async() => {
     }
 }
 
-export const addCoupon = async(values) => {
+export const addCoupon = async (values) => {
     try {
-        console.log("val",values);
+        console.log("val", values);
 
         const response = await instance.post('/admin/addcoupon', values, {
-            withCredentials : true
+            withCredentials: true
         });
         return response.data;
     } catch (error) {
@@ -194,3 +196,24 @@ export const deleteCoupon = async (id) => {
         throw new Error('Error deleting category: ' + error.message);
     }
 };
+
+export const editCoupon = async (id, Coupon_Name, Coupon_Value, Coupon_Type, Start_Date, End_Date, Active_Status) => {
+    const couponData = {
+        Coupon_Name,
+        Coupon_Value,
+        Coupon_Type,
+        Start_Date,
+        End_Date,
+        Active_Status
+    };
+
+    try {
+        const response = await instance.put(`/admin/editCoupon/${id}`, couponData, {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Error editing Coupon: ' + error.message);
+    }
+};
+

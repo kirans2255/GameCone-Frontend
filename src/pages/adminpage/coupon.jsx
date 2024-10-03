@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import { addCoupon, getCoupon,deleteCoupon } from '../../services/admin/login';
+import { addCoupon, getCoupon, deleteCoupon, editCoupon } from '../../services/admin/login';
 
 const Modal = ({ isOpen, onClose, onSave, coupon, handleInputChange, isEditing }) => {
   if (!isOpen) return null;
@@ -113,9 +112,9 @@ const CouponPage = () => {
     try {
       const result = await getCoupon();
       console.log("re:", result)
-      setCoupons( result.coupons);
-      console.log("ff",coupons);
-      
+      setCoupons(result.coupons);
+      console.log("ff", coupons);
+
     } catch (error) {
       console.error('Error fetching coupons:', error.message);
     }
@@ -135,8 +134,8 @@ const CouponPage = () => {
   const handleAddCoupon = async () => {
     try {
       const result = await addCoupon(newCoupon);
-      console.log("bew",newCoupon);
-      
+      console.log("bew", newCoupon);
+
       if (result.success) {
         setCoupons([...coupons, result.coupon]);
         setNewCoupon({
@@ -195,7 +194,10 @@ const CouponPage = () => {
   const handleSaveCoupon = async () => {
     try {
       if (isEditing) {
-        const result = await editCoupon(editCouponId, newCoupon);
+        console.log('newCategory:', newCoupon);
+        const result = await editCoupon(editCouponId, newCoupon.Coupon_Name, newCoupon.Coupon_Value, newCoupon.Coupon_Type, newCoupon.Start_Date, newCoupon.End_Date);
+        fetchCoupons();33
+        console.log("brs", result);
         if (result.success) {
           const updatedCoupons = coupons.map((coupon, index) =>
             index === editIndex ? result.coupon : coupon
@@ -274,27 +276,27 @@ const CouponPage = () => {
       <div className="bg-white p-4 rounded shadow-lg">
         <h2 className="text-xl font-semibold mb-4">Coupon List</h2>
 
-        <div className="overflow-x-auto">
-          <ul>
-            {coupons?.map((coupon, index) => (
-              <li key={index} className="bg-gray-100 p-4 rounded mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {coupons?.map((coupon, index) => (
+            <div key={index} className="bg-gray-100 p-4 rounded shadow-lg flex flex-col justify-between items-center h-60 w-80">
+              <div className="text-left">
                 <div><strong>Name:</strong> {coupon.Coupon_Name}</div>
                 <div><strong>Value:</strong> {coupon.Coupon_Value}</div>
                 <div><strong>Type:</strong> {coupon.Coupon_Type}</div>
                 <div><strong>Start Date:</strong> {coupon.Start_Date}</div>
                 <div><strong>End Date:</strong> {coupon.End_Date}</div>
                 <div><strong>Status:</strong> {coupon.Active_Status === 'active' ? 'Active' : 'Inactive'}</div>
-                <div className="flex justify-around mt-2">
-                  <button onClick={() => handleEditCoupon(index, coupon)} className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded">
-                    <FaEdit />
-                  </button>
-                  <button onClick={() => handleOpenDeleteModal(coupon)} className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
-                    <FaTrash />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+              </div>
+              <div className="flex justify-around w-full mt-4">
+                <button onClick={() => handleEditCoupon(index, coupon)} className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded">
+                  <FaEdit />
+                </button>
+                <button onClick={() => handleOpenDeleteModal(coupon)} className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
+                  <FaTrash />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -315,7 +317,7 @@ const CouponPage = () => {
         onDelete={handleDeleteCoupon}
         coupon={couponToDelete}
       />
-    </div>
+    </div >
   );
 };
 

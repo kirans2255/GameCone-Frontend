@@ -69,6 +69,18 @@ const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFile
 
 
         <div className="mb-4">
+          <label className="block mb-2 font-semibold">Product Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            value={product.quantity}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+
+        <div className="mb-4">
           <label className="block mb-2 font-semibold">Product Images</label>
           <input
             type="file"
@@ -96,7 +108,7 @@ const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFile
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', edition: '', category: '',image: null });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', edition: '', category: '', quantity:'',image: null });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
@@ -153,7 +165,7 @@ const ProductPage = () => {
     try {
       if (isEditing) {
         console.log('newproduct:', newProduct);
-        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition,newProduct.category, newProduct.image);
+        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition,newProduct.category, newProduct.quantity,newProduct.image);
         fetchProducts();
         console.log("result :", result)
 
@@ -169,7 +181,7 @@ const ProductPage = () => {
           setProducts([...products, result.product]);
         }
       }
-      setNewProduct({ name: '', price: '', edition: '', category: '', image: null });
+      setNewProduct({ name: '', price: '', edition: '', category: '', quantity:'' ,image: null });
       setIsModalOpen(false);
       setIsEditing(false);
       setEditIndex(null);
@@ -205,7 +217,7 @@ const ProductPage = () => {
   const handleEditProduct = (index, product) => {
     setEditIndex(index);
     setEditProductId(product._id);
-    setNewProduct({ name: product.name, price: product.price, edition: product.edition,category: product.category ,image: null });
+    setNewProduct({ name: product.name, price: product.price, edition: product.edition,category: product.category , quantity: product.quantity ,image: null });
     setIsEditing(true);
     setIsModalOpen(true);
   };
@@ -213,12 +225,12 @@ const ProductPage = () => {
   const openModal = () => {
     setIsModalOpen(true);
     setIsEditing(false);
-    setNewProduct({ name: '', price: '', edition: '',category: '', image: null });
+    setNewProduct({ name: '', price: '', edition: '',category: '',quantity:'' , image: null });
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setNewProduct({ name: '', price: '', edition: '',category: '', image: null });
+    setNewProduct({ name: '', price: '', edition: '',category: '',quantity:'' , image: null });
     setIsEditing(false);
     setEditIndex(null);
   };
@@ -246,6 +258,7 @@ const ProductPage = () => {
               <p className="text-gray-600">Price: ₹{product.price}</p>
               <p className="text-gray-600">Edition: {product.edition}</p>
               <p className="text-gray-600">Category: {product.category}</p>
+              <p className="text-gray-600">Quantity: {product.quantity}</p>
               <div className="mb-4">
                 {typeof product.images.url === 'string' ? (
                   <img
