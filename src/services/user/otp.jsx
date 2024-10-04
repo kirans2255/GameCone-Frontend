@@ -1,10 +1,10 @@
 import instance from "../../utils/axios";
 
-const Login = async (values) => {
+const otplogin = async (values) => {
     console.log('data us :', values);
 
     try {
-        const response = await instance.post('/login', values, {
+        const response = await instance.post('/otplogin', values, {
             withCredentials: true
         })
         console.log("ending :", response);
@@ -20,4 +20,5 @@ const Login = async (values) => {
 }
 
 
-export default  Login;
+export default  otplogin;
+

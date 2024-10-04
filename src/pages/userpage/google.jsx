@@ -1,42 +1,35 @@
-import React from 'react';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
+import React ,{useState} from 'react';
+import handleGoogleAuth from '../../services/user/signupwithgoogle'
+import GoogleAuthButton from '../../components/AuthButton/Google Button';
 import { useNavigate } from 'react-router-dom';
 
 const GoogleSignIn = () => {
     const navigate = useNavigate();
+    // eslint-disable-next-line no-unused-vars
+    const [loading, setLoading] = useState(false);
+
 
     const handleSuccess = async (response) => {
+        setLoading(true);
         try {
-            // eslint-disable-next-line no-unused-vars
-            const { data } = await axios.get('http://localhost:5173/auth/google', {
-                headers: {
-                    Authorization: `Bearer ${response.credential}`
-                },
-                withCredentials: true,
-            });
-            navigate('/dashboard'); // Redirect to dashboard or a protected route
-        } catch (error) {
-            console.error('Error during Google sign-in:', error);
-        }
-    };
+            await handleGoogleAuth(response, navigate);
 
-    const handleError = (error) => {
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+        }
+    };  
+
+    const handleFailure = (error) => {
         console.error('Google sign-in error:', error);
     };
 
     return (
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <div>
-                {/* <h2>Sign in with Google</h2> */}
-                <GoogleLogin
-                    onSuccess={handleSuccess}
-                    onError={handleError}
-                    useOneTap
-                />
-            </div>
-        </GoogleOAuthProvider>
-    );
+        <GoogleAuthButton
+            onSuccess={handleSuccess}
+            onFailure={handleFailure}
+        />
+    )
 };
 
 export default GoogleSignIn;

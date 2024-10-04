@@ -196,7 +196,7 @@ const CouponPage = () => {
       if (isEditing) {
         console.log('newCategory:', newCoupon);
         const result = await editCoupon(editCouponId, newCoupon.Coupon_Name, newCoupon.Coupon_Value, newCoupon.Coupon_Type, newCoupon.Start_Date, newCoupon.End_Date);
-        fetchCoupons();33
+        fetchCoupons(); 33
         console.log("brs", result);
         if (result.success) {
           const updatedCoupons = coupons.map((coupon, index) =>
@@ -287,7 +287,7 @@ const CouponPage = () => {
                 <div><strong>End Date:</strong> {coupon.End_Date}</div>
                 <div><strong>Status:</strong> {coupon.Active_Status === 'active' ? 'Active' : 'Inactive'}</div>
               </div>
-              <div className="flex justify-around w-full mt-4">
+              <div className="flex justify-center w-full mt-4">
                 <button onClick={() => handleEditCoupon(index, coupon)} className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded">
                   <FaEdit />
                 </button>

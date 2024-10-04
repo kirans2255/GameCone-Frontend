@@ -1,16 +1,29 @@
 /* eslint-disable react/no-unescaped-entities */
-// import React from 'react';
+import { useState } from 'react';
 import { Formik } from 'formik';
-// import { FaGoogle } from 'react-icons/fa';
+import { FaPhoneAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Login from '../../services/user/login';
 import GoogleSignIn from './google';
+import OTPModal from '../../components/modal/otp'
 
 const LoginForm = () => {
 
   const navigate = useNavigate();
+
+  const [isOTPModalOpen, setOTPModalOpen] = useState(false);
+
+  // Function to open OTP modal
+  const openOTPModal = () => {
+    setOTPModalOpen(true);
+  };
+
+  // Function to close OTP modal
+  const closeOTPModal = () => {
+    setOTPModalOpen(false);
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -143,6 +156,14 @@ const LoginForm = () => {
                     className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
                   > <GoogleSignIn />
                   </button>
+                  <button
+                    type="button"
+                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
+                    onClick={openOTPModal}
+                  >
+                    <FaPhoneAlt className="mr-2 h-5 w-5" />
+                    Sign in with OTP
+                  </button>
                 </div>
 
                 <div className="text-sm text-center text-white">
@@ -158,8 +179,11 @@ const LoginForm = () => {
       </div>
 
       {/* Right side: Image */}
-      <div className="hidden md:block w-1/2 bg-cover bg-center" style={{ backgroundImage: 'url(https://img.freepik.com/free-photo/cartoon-man-wearing-vr-glasses_23-2151136835.jpg)' }}>
-      </div>
+
+      <div className="hidden md:block w-1/2 bg-cover bg-center" style={{ backgroundImage: 'url(https://img.freepik.com/free-photo/cartoon-man-wearing-vr-glasses_23-2151136835.jpg)' }}></div>
+
+      {/* OTP Modal */}
+      {isOTPModalOpen && <OTPModal closeOTPModal={closeOTPModal} />}
 
       {/* Toast container */}
       <ToastContainer />
