@@ -239,15 +239,28 @@ export const statusCoupon = async (id, status) => {
 }
 
 
-export const searchProducts = async (searchTerm, selectedCategory) => {
+export const searchProducts = async (searchTerm) => {
     try {
-      const response = await instance.get('/admin/products/search', {
-        params: { search: searchTerm || selectedCategory } 
-      });
-      return response.data;
+        const response = await instance.get('/admin/products/search', {
+            params: { search: searchTerm }
+        });
+        return response.data;
     } catch (error) {
-      console.error('Error searching products:', error);
-      throw error;
+        console.error('Error searching products:', error);
+        throw error;
     }
-  };
-  
+};
+
+
+export const getSort = async (sortOrder) => {
+    try {
+        const response = await instance.get('/admin/product/sort', {
+            params: { sortOrder }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error searching products:', error);
+        throw error;
+    }
+}
+

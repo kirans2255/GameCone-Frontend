@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
-import { addProduct, getProduct, editProduct, deleteProduct, getCategories ,searchProducts} from '../../services/admin/login'; // Ensure to import the necessary functions
+import { addProduct, getProduct, editProduct, deleteProduct, getCategories, searchProducts, getSort } from '../../services/admin/login'; // Ensure to import the necessary functions
 // import ProductPages from '../adminpage/sort'
 
 const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFileChange, isEditing, categories }) => {
@@ -120,6 +120,8 @@ const ProductPage = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('');
+
   // const [selectedCategory, setSelectedCategory] = useState('');
   // console.log("c",categories)
 
@@ -166,11 +168,12 @@ const ProductPage = () => {
     });
   };
 
-  
+
   const handleSearch = async () => {
     try {
       const result = await searchProducts(searchTerm);
       setProducts(result.products);
+      setCategories(result.categories)
     } catch (error) {
       console.error('Error searching products:', error.message);
     }
@@ -261,12 +264,33 @@ const ProductPage = () => {
   }, [Navigate]);
 
 
+  //Sort
+  
+  useEffect(() => {
+    if (sortOrder) {
+      handleSort();
+    }
+  }, [sortOrder]);
+
+  const handleSort = async () => {
+    try {
+      console.log('Current sort order:', sortOrder);
+      const result = await getSort(sortOrder);
+      console.log('Fetched products:', result);
+      setProducts(result.products);
+    } catch (error) {
+      console.error('Error fetching sorted products:', error.message);
+    }
+  };
+
+
+
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-gray-100">
-
-
-      <div className="flex-1 p-6">
+      <div className="w-full lg:w-1/4 p-6 bg-white shadow-md rounded-lg">
         <h1 className="text-2xl font-bold mb-4">Product Management</h1>
+
+        {/* Search Bar */}
         <div className="flex space-x-4 mb-4">
           <input
             type="text"
@@ -282,66 +306,96 @@ const ProductPage = () => {
             <FaSearch className="mr-2" /> Search
           </button>
         </div>
-        <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"><FaPlus className="mr-2" /> Add Product</button>
-        {/* <div>
-          <ProductPages />
-        </div> */}
+
+        {/* Sort Options */}
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2">Sort By:</label>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="w-full p-2 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Sorting</option>
+            <option value="priceLowToHigh">Price: Low to High</option>
+            <option value="priceHighToLow">Price: High to Low</option>
+            <option value="nameAtoZ">Name: A to Z</option>
+            <option value="nameZtoA">Name: Z to A</option>
+          </select>
+        </div>
+
+
+        {/* Filter Options */}
+        <div className="mb-6">
+          <label className="block text-gray-700 font-semibold mb-2">Filter By Category:</label>
+          <select className="w-full p-2 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">All Categories</option>
+            <option value="category1">Category 1</option>
+            <option value="category2">Category 2</option>
+            {/* Add more categories as needed */}
+          </select>
+        </div>
+
+        {/* Add Product Button */}
+        <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center mb-6">
+          <FaPlus className="mr-2" /> Add Product
+        </button>
+      </div>
+
+      {/* Right Side for Product Cards */}
+      <div className="flex-1 p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 bg-gray-50">
           {products.map((product, index) => (
             <div
               key={product._id}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 relative transform hover:scale-105 w-96 mx-auto"
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 relative transform hover:scale-105 mx-auto"
             >
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 {typeof product.images.url === 'string' ? (
                   <img
                     src={product.images.url}
                     alt={product.productName}
-                    className="w-80 h-56 object-cover rounded-lg mx-auto"
+                    className="w-full h-48 object-cover rounded-lg mx-auto"
                   />
                 ) : (
                   product.image && (
                     <img
                       src={URL.createObjectURL(product.images.url)}
                       alt={product.productName}
-                      className="w-80 h-56 object-cover rounded-lg mx-auto"
+                      className="w-full h-48 object-cover rounded-lg mx-auto"
                     />
                   )
                 )}
-                <div className="absolute top-2 right-2 bg-white px-5 py-2 rounded-full shadow-md text-base font-semibold text-gray-700">
+                <div className="absolute top-2 right-2 bg-white px-4 py-1 rounded-full shadow-md text-base font-semibold text-gray-700">
                   ₹{product.price}
                 </div>
               </div>
 
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-gray-800 truncate">
-                  {product.name}
-                </h3>
-                <p className="text-lg text-gray-600 mt-2">Edition: {product.edition}</p>
-                <p className="text-lg text-gray-600 mt-2">Category: {product.category}</p>
-                <p className="text-lg text-gray-600 mt-2">Quantity: {product.quantity}</p>
+                <h3 className="text-lg font-bold text-gray-800 truncate">{product.name}</h3>
+                <p className="text-sm text-gray-600 mt-1">Edition: {product.edition}</p>
+                <p className="text-sm text-gray-600 mt-1">Category: {product.category}</p>
+                <p className="text-sm text-gray-600 mt-1">Quantity: {product.quantity}</p>
 
-                <div className="flex justify-center items-center mt-6 space-x-6">
+                <div className="flex justify-center items-center mt-4 space-x-4">
                   <button
                     onClick={() => handleEditProduct(index, product)}
-                    className="p-4 bg-yellow-200 rounded-full hover:bg-yellow-400 transition-colors duration-200 flex items-center"
+                    className="p-2 bg-yellow-200 rounded-full hover:bg-yellow-400 transition-colors duration-200 flex items-center"
                     aria-label="Edit"
                   >
-                    <FaEdit className="text-yellow-600" size={22} />
+                    <FaEdit className="text-yellow-600" size={18} />
                   </button>
                   <button
                     onClick={() => handleOpenDeleteModal(product)}
-                    className="p-4 bg-red-200 rounded-full hover:bg-red-400 transition-colors duration-200 flex items-center"
+                    className="p-2 bg-red-200 rounded-full hover:bg-red-400 transition-colors duration-200 flex items-center"
                     aria-label="Delete"
                   >
-                    <FaTrash className="text-red-600" size={22} />
+                    <FaTrash className="text-red-600" size={18} />
                   </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
-
 
 
         <Modal
