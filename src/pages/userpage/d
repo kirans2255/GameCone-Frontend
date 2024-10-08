@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import { addCoupon, getCoupon, deleteCoupon, editCoupon ,statusCoupon} from '../../services/admin/login';
+import { FaPlus, FaEdit, FaTrash, FaSave } from 'react-icons/fa';
+import { addCoupon, getCoupon, deleteCoupon, editCoupon } from '../../services/admin/login';
 
 const Modal = ({ isOpen, onClose, onSave, coupon, handleInputChange, isEditing }) => {
   if (!isOpen) return null;
@@ -90,6 +90,24 @@ const Modal = ({ isOpen, onClose, onSave, coupon, handleInputChange, isEditing }
   );
 };
 
+const DeleteModal = ({ isOpen, onClose, onDelete, coupon }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
+        <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
+        <p>Are you sure you want to delete this coupon?</p>
+        <div className="text-center font-semibold mt-4">{coupon.Coupon_Name}</div>
+        <div className="flex justify-end mt-4">
+          <button onClick={onClose} className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded mr-2">Cancel</button>
+          <button onClick={() => { onDelete(coupon._id); onClose(); }} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CouponPage = () => {
   const [coupons, setCoupons] = useState([]);
   const [newCoupon, setNewCoupon] = useState({
@@ -107,7 +125,6 @@ const CouponPage = () => {
   const [editCouponId, setEditCouponId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [couponToDelete, setCouponToDelete] = useState(null);
-  // const [activeStatusEditingIndex, setActiveStatusEditingIndex] = useState(null);
 
   const fetchCoupons = async () => {
     try {
@@ -132,20 +149,10 @@ const CouponPage = () => {
   const handleAddCoupon = async () => {
     try {
       const result = await addCoupon(newCoupon);
-
       if (result.success) {
         setCoupons([...coupons, result.coupon]);
-        setNewCoupon({
-          Coupon_Name: '',
-          Coupon_Value: '',
-          Coupon_Type: 'percentage',
-          Start_Date: '',
-          End_Date: '',
-          Active_Status: 'active'
-        });
+        resetCouponForm();
         setIsModalOpen(false);
-        setIsEditing(false);
-        setEditIndex(null);
       } else {
         console.error(result.message);
       }
@@ -154,28 +161,27 @@ const CouponPage = () => {
     }
   };
 
-  const DeleteModal = ({ isOpen, onClose, onDelete, coupon }) => {
-    if (!isOpen) return null;
-
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
-          <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
-          <p>Are you sure you want to delete this coupon?</p>
-          <div className="text-center font-semibold mt-4">{coupon.Coupon_Name}</div>
-          <div className="flex justify-end mt-4">
-            <button onClick={onClose} className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded mr-2">Cancel</button>
-            <button onClick={() => { onDelete(coupon._id); onClose(); }} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Delete</button>
-          </div>
-        </div>
-      </div>
-    );
+  const handleSaveCoupon = async () => {
+    try {
+      if (isEditing) {
+        const result = await editCoupon(editCouponId, newCoupon);
+        if (result.success) {
+          const updatedCoupons = coupons.map((coupon, index) =>
+            index === editIndex ? result.coupon : coupon
+          );
+          setCoupons(updatedCoupons);
+        }
+      }
+      resetCouponForm();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Error saving coupon:', error.message);
+    }
   };
 
   const handleDeleteCoupon = async (id) => {
     try {
       const result = await deleteCoupon(id);
-      fetchCoupons();
       if (result.success) {
         setCoupons(coupons.filter(coupon => coupon._id !== id));
       } else {
@@ -186,35 +192,44 @@ const CouponPage = () => {
     }
   };
 
-  const handleSaveCoupon = async () => {
+  const handleStatusChange = async (index, coupon, newStatus) => {
     try {
-      if (isEditing) {
-        console.log('newCategory:', newCoupon);
-        const result = await editCoupon(editCouponId, newCoupon.Coupon_Name, newCoupon.Coupon_Value, newCoupon.Coupon_Type, newCoupon.Start_Date, newCoupon.End_Date, newCoupon.Active_Status);
-        fetchCoupons();
-        console.log("brs", result);
-        if (result.success) {
-          const updatedCoupons = coupons.map((coupon, index) =>
-            index === editIndex ? result.coupon : coupon
-          );
-          setCoupons(updatedCoupons);
-        }
+      const updatedCoupon = { ...coupon, Active_Status: newStatus };
+      console.log("update",updatedCoupon);
+      
+      const result = await editCoupon(coupon._id, updatedCoupon);
+      console.log("state:",result);
+      
+      if (result.success) {
+        const updatedCoupons = [...coupons];
+        updatedCoupons[index] = result.coupon;
+        setCoupons(updatedCoupons);
       }
-      setNewCoupon({
-        Coupon_Name: '',
-        Coupon_Value: '',
-        Coupon_Type: 'percentage',
-        Start_Date: '',
-        End_Date: '',
-        Active_Status: 'active'
-      });
-      setIsModalOpen(false);
-      setIsEditing(false);
-      setEditIndex(null);
-      setEditCouponId(null);
     } catch (error) {
-      console.error('Error saving coupon:', error.message);
+      console.error('Error updating status:', error.message);
     }
+  };
+
+  const resetCouponForm = () => {
+    setNewCoupon({
+      Coupon_Name: '',
+      Coupon_Value: '',
+      Coupon_Type: 'percentage',
+      Start_Date: '',
+      End_Date: '',
+      Active_Status: 'active'
+    });
+    setIsEditing(false);
+    setEditIndex(null);
+    setEditCouponId(null);
+  };
+
+  const handleEditCoupon = (index, coupon) => {
+    setEditIndex(index);
+    setEditCouponId(coupon._id);
+    setNewCoupon({ ...coupon });
+    setIsEditing(true);
+    setIsModalOpen(true);
   };
 
   const handleOpenDeleteModal = (coupon) => {
@@ -227,91 +242,36 @@ const CouponPage = () => {
     setCouponToDelete(null);
   };
 
-  const handleEditCoupon = (index, coupon) => {
-    setEditIndex(index);
-    setEditCouponId(coupon._id);
-    setNewCoupon({
-      Coupon_Name: coupon.Coupon_Name,
-      Coupon_Value: coupon.Coupon_Value,
-      Coupon_Type: coupon.Coupon_Type,
-      Start_Date: coupon.Start_Date,
-      End_Date: coupon.End_Date,
-      Active_Status: coupon.Active_Status
-    });
-    setIsEditing(true);
-    setIsModalOpen(true);
-  };
-
-  const openModal = () => {
-    setIsModalOpen(true);
-    setIsEditing(false);
-    setNewCoupon({
-      Coupon_Name: '',
-      Coupon_Value: '',
-      Coupon_Type: 'percentage',
-      Start_Date: '',
-      End_Date: '',
-      Active_Status: 'active'
-    });
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleStatusChange = async (index, coupon, newStatus) => {
-    try {
-      const updatedCoupon = {
-        Coupon_Name: coupon.Coupon_Name,
-        Coupon_Value: coupon.Coupon_Value,
-        Coupon_Type: coupon.Coupon_Type,
-        Start_Date: coupon.Start_Date,
-        End_Date: coupon.End_Date,
-        Active_Status: newStatus 
-      };
-  
-      const result = await statusCoupon(coupon._id, updatedCoupon);
-  
-      if (result.success) {
-        const updatedCoupons = [...coupons];
-        updatedCoupons[index] = result.coupon; 
-        setCoupons(updatedCoupons);
-      }
-    } catch (error) {
-      console.error('Error updating status:', error.message);
-    }
-  };
-
   return (
     <div className="p-8">
       <h1 className="text-2xl font-semibold mb-6">Coupon Management</h1>
       <button
-        onClick={openModal}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center"
+        onClick={() => setIsModalOpen(true)}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center mb-4"
       >
         <FaPlus className="mr-2" /> Add Coupon
       </button>
 
-      <table className="table-auto w-full mt-4 border">
+      <table className="table-auto w-full border">
         <thead>
           <tr>
-            <th className="px-4 py-2 border">Name</th>
-            <th className="px-4 py-2 border">Value</th>
-            <th className="px-4 py-2 border">Type</th>
+            <th className="px-4 py-2 border">Coupon Name</th>
+            <th className="px-4 py-2 border">Coupon Value</th>
+            <th className="px-4 py-2 border">Coupon Type</th>
             <th className="px-4 py-2 border">Start Date</th>
             <th className="px-4 py-2 border">End Date</th>
-            <th className="px-4 py-2 border">Status</th>
+            <th className="px-4 py-2 border">Active Status</th>
             <th className="px-4 py-2 border">Actions</th>
           </tr>
         </thead>
         <tbody>
           {coupons.map((coupon, index) => (
             <tr key={coupon._id}>
-              <td className="border px-4 py-2">{coupon.Coupon_Name}</td>
-              <td className="border px-4 py-2">{coupon.Coupon_Value}</td>
-              <td className="border px-4 py-2">{coupon.Coupon_Type}</td>
-              <td className="border px-4 py-2">{coupon.Start_Date}</td>
-              <td className="border px-4 py-2">{coupon.End_Date}</td>
+              <td className="px-4 py-2 border">{coupon.Coupon_Name}</td>
+              <td className="px-4 py-2 border">{coupon.Coupon_Value}</td>
+              <td className="px-4 py-2 border">{coupon.Coupon_Type}</td>
+              <td className="px-4 py-2 border">{coupon.Start_Date}</td>
+              <td className="px-4 py-2 border">{coupon.End_Date}</td>
               <td className="px-4 py-2 border">
                 <select
                   value={coupon.Active_Status}
@@ -322,17 +282,11 @@ const CouponPage = () => {
                   <option value="inactive">Inactive</option>
                 </select>
               </td>
-              <td className="border px-4 py-2 flex items-center space-x-4">
-                <button
-                  onClick={() => handleEditCoupon(index, coupon)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
+              <td className="px-4 py-2 border">
+                <button onClick={() => handleEditCoupon(index, coupon)} className="bg-yellow-600 hover:bg-yellow-700 text-white px-2 py-1 rounded">
                   <FaEdit />
                 </button>
-                <button
-                  onClick={() => handleOpenDeleteModal(coupon)}
-                  className="text-red-600 hover:text-red-800"
-                >
+                <button onClick={() => handleOpenDeleteModal(coupon)} className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded ml-2">
                   <FaTrash />
                 </button>
               </td>
@@ -343,8 +297,8 @@ const CouponPage = () => {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={closeModal}
-        onSave={isEditing ? handleSaveCoupon : handleAddCoupon}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveCoupon}
         coupon={newCoupon}
         handleInputChange={handleInputChange}
         isEditing={isEditing}

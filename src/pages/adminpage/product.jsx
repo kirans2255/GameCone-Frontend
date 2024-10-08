@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
-import {  useNavigate } from 'react-router-dom';
-import {  FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import { addProduct, getProduct, editProduct, deleteProduct, getCategories } from '../../services/admin/login'; // Ensure to import the necessary functions
+import { useNavigate } from 'react-router-dom';
+import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
+import { addProduct, getProduct, editProduct, deleteProduct, getCategories ,searchProducts} from '../../services/admin/login'; // Ensure to import the necessary functions
+// import ProductPages from '../adminpage/sort'
 
-const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFileChange, isEditing,categories }) => {
+const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFileChange, isEditing, categories }) => {
   // eslint-disable-next-line no-unused-vars
   // const [categories, setCategories] = useState([]);
-  
+
 
   if (!isOpen) return null;
 
@@ -88,13 +89,15 @@ const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFile
             onChange={handleFileChange}
             className="w-full p-2 border rounded"
           />
+
           {product.image && (
             <img
-              src={URL.createObjectURL(product.image)}
-              alt="product Preview"
+              src={typeof product.image === 'string' ? product.image : URL.createObjectURL(product.image)}
+              alt="product preview"
               className="mt-4 w-full h-48 object-cover rounded"
             />
           )}
+
         </div>
 
         <div className="flex justify-end">
@@ -108,7 +111,7 @@ const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFile
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', edition: '', category: '', quantity:'',image: null });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', edition: '', category: '', quantity: '', image: null });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
@@ -116,6 +119,8 @@ const ProductPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  // const [selectedCategory, setSelectedCategory] = useState('');
   // console.log("c",categories)
 
 
@@ -123,7 +128,7 @@ const ProductPage = () => {
   const fetchCategories = async () => {
     try {
       const result = await getCategories();
-      console.log("cat:",result)
+      console.log("cat:", result)
       setCategories(result.categories);
     } catch (error) {
       console.error('Error fetching categories:', error.message);
@@ -161,11 +166,22 @@ const ProductPage = () => {
     });
   };
 
+  
+  const handleSearch = async () => {
+    try {
+      const result = await searchProducts(searchTerm);
+      setProducts(result.products);
+    } catch (error) {
+      console.error('Error searching products:', error.message);
+    }
+  };
+
+
   const handleSaveProduct = async () => {
     try {
       if (isEditing) {
         console.log('newproduct:', newProduct);
-        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition,newProduct.category, newProduct.quantity,newProduct.image);
+        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition, newProduct.category, newProduct.quantity, newProduct.image);
         fetchProducts();
         console.log("result :", result)
 
@@ -181,7 +197,7 @@ const ProductPage = () => {
           setProducts([...products, result.product]);
         }
       }
-      setNewProduct({ name: '', price: '', edition: '', category: '', quantity:'' ,image: null });
+      setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', image: null });
       setIsModalOpen(false);
       setIsEditing(false);
       setEditIndex(null);
@@ -217,7 +233,7 @@ const ProductPage = () => {
   const handleEditProduct = (index, product) => {
     setEditIndex(index);
     setEditProductId(product._id);
-    setNewProduct({ name: product.name, price: product.price, edition: product.edition,category: product.category , quantity: product.quantity ,image: null });
+    setNewProduct({ name: product.name, price: product.price, edition: product.edition, category: product.category, quantity: product.quantity, image: product.images.url || null });
     setIsEditing(true);
     setIsModalOpen(true);
   };
@@ -225,12 +241,12 @@ const ProductPage = () => {
   const openModal = () => {
     setIsModalOpen(true);
     setIsEditing(false);
-    setNewProduct({ name: '', price: '', edition: '',category: '',quantity:'' , image: null });
+    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', image: null });
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setNewProduct({ name: '', price: '', edition: '',category: '',quantity:'' , image: null });
+    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', image: null });
     setIsEditing(false);
     setEditIndex(null);
   };
@@ -247,47 +263,86 @@ const ProductPage = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-gray-100">
-    
+
+
       <div className="flex-1 p-6">
         <h1 className="text-2xl font-bold mb-4">Product Management</h1>
+        <div className="flex space-x-4 mb-4">
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+          >
+            <FaSearch className="mr-2" /> Search
+          </button>
+        </div>
         <button onClick={openModal} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"><FaPlus className="mr-2" /> Add Product</button>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {/* <div>
+          <ProductPages />
+        </div> */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 bg-gray-50">
           {products.map((product, index) => (
-            <div key={product._id} className="bg-white border rounded-lg shadow-md p-4 w-[480px]">
-              <h3 className="text-lg font-semibold">{product.name}</h3>
-              <p className="text-gray-600">Price: ₹{product.price}</p>
-              <p className="text-gray-600">Edition: {product.edition}</p>
-              <p className="text-gray-600">Category: {product.category}</p>
-              <p className="text-gray-600">Quantity: {product.quantity}</p>
-              <div className="mb-4">
+            <div
+              key={product._id}
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 relative transform hover:scale-105 w-96 mx-auto"
+            >
+              <div className="relative mb-6">
                 {typeof product.images.url === 'string' ? (
                   <img
                     src={product.images.url}
                     alt={product.productName}
-                    className="w-96 h-64 object-cover rounded"
-                  />    
+                    className="w-80 h-56 object-cover rounded-lg mx-auto"
+                  />
                 ) : (
                   product.image && (
                     <img
                       src={URL.createObjectURL(product.images.url)}
                       alt={product.productName}
-                      className="w-screen h-64 object-cover rounded"
+                      className="w-80 h-56 object-cover rounded-lg mx-auto"
                     />
                   )
                 )}
+                <div className="absolute top-2 right-2 bg-white px-5 py-2 rounded-full shadow-md text-base font-semibold text-gray-700">
+                  ₹{product.price}
+                </div>
               </div>
 
-              <div className="flex justify-between mt-4">
-                <button onClick={() => handleEditProduct(index, product)} className="text-yellow-500 hover:text-yellow-600">
-                  <FaEdit />
-                </button>
-                <button onClick={() => handleOpenDeleteModal(product)} className="text-red-500 hover:text-red-600">
-                  <FaTrash />
-                </button>
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-800 truncate">
+                  {product.name}
+                </h3>
+                <p className="text-lg text-gray-600 mt-2">Edition: {product.edition}</p>
+                <p className="text-lg text-gray-600 mt-2">Category: {product.category}</p>
+                <p className="text-lg text-gray-600 mt-2">Quantity: {product.quantity}</p>
+
+                <div className="flex justify-center items-center mt-6 space-x-6">
+                  <button
+                    onClick={() => handleEditProduct(index, product)}
+                    className="p-4 bg-yellow-200 rounded-full hover:bg-yellow-400 transition-colors duration-200 flex items-center"
+                    aria-label="Edit"
+                  >
+                    <FaEdit className="text-yellow-600" size={22} />
+                  </button>
+                  <button
+                    onClick={() => handleOpenDeleteModal(product)}
+                    className="p-4 bg-red-200 rounded-full hover:bg-red-400 transition-colors duration-200 flex items-center"
+                    aria-label="Delete"
+                  >
+                    <FaTrash className="text-red-600" size={22} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
+
+
 
         <Modal
           isOpen={isModalOpen}

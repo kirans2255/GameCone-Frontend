@@ -116,8 +116,8 @@ export const addProduct = async (values) => {
 
         const response = await instance.post('/admin/addProduct', formData, {
             headers: {
-               'Content-Type': 'multipart/form-data',
-            }, 
+                'Content-Type': 'multipart/form-data',
+            },
         });
         return response.data;
     } catch (error) {
@@ -145,7 +145,7 @@ export const deleteProduct = async (id) => {
 };
 
 
-export const editProduct = async (id, name, price, edition, category,quantity ,image) => {
+export const editProduct = async (id, name, price, edition, category, quantity, image) => {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('price', price);
@@ -163,6 +163,15 @@ export const editProduct = async (id, name, price, edition, category,quantity ,i
         return response.data;
     } catch (error) {
         throw new Error('Error editing product: ' + error.message);
+    }
+}
+
+export const sort = async () => {
+    try {
+        const response = await instance.get('/admin/product/sort');
+        return response.data;
+    } catch (error) {
+        throw new Error('Error fetching product: ' + error.message);
     }
 }
 
@@ -217,3 +226,28 @@ export const editCoupon = async (id, Coupon_Name, Coupon_Value, Coupon_Type, Sta
     }
 };
 
+
+export const statusCoupon = async (id, status) => {
+    try {
+        const response = await instance.put(`/admin/statusCoupon/${id}`, status, {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Error status Coupon: ' + error.message);
+    }
+}
+
+
+export const searchProducts = async (searchTerm, selectedCategory) => {
+    try {
+      const response = await instance.get('/admin/products/search', {
+        params: { search: searchTerm || selectedCategory } 
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error searching products:', error);
+      throw error;
+    }
+  };
+  
