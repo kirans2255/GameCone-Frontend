@@ -270,6 +270,7 @@ const ProductPage = () => {
     if (sortOrder) {
       handleSort();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortOrder]);
 
   const handleSort = async () => {
