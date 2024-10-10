@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import { addProduct, getProduct, editProduct, deleteProduct, getCategories, searchProducts, getSort } from '../../services/admin/login'; // Ensure to import the necessary functions
+import { Pagination } from 'antd';
+import { Slider } from 'antd';
 // import ProductPages from '../adminpage/sort'
 
 const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFileChange, isEditing, categories }) => {
@@ -79,7 +81,17 @@ const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFile
             className="w-full p-2 border rounded"
           />
         </div>
-
+          
+        <div className="mb-4">
+          <label className="block mb-2 font-semibold">Product Description</label>
+          <input
+            type="text"
+            name="description"
+            value={product.description}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
 
         <div className="mb-4">
           <label className="block mb-2 font-semibold">Product Images</label>
@@ -121,11 +133,22 @@ const ProductPage = () => {
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
+  const [priceRange, setPriceRange] = useState([0, 1000]); // Default price range
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   // const [selectedCategory, setSelectedCategory] = useState('');
   // console.log("c",categories)
 
+  //Pagination
+  const handlePageChange = (page, pageSize) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
 
+  // Get the products for the current page
+  const currentProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const fetchCategories = async () => {
     try {
@@ -184,7 +207,7 @@ const ProductPage = () => {
     try {
       if (isEditing) {
         console.log('newproduct:', newProduct);
-        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition, newProduct.category, newProduct.quantity, newProduct.image);
+        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition, newProduct.category, newProduct.quantity,newProduct.description ,newProduct.image);
         fetchProducts();
         console.log("result :", result)
 
@@ -200,7 +223,7 @@ const ProductPage = () => {
           setProducts([...products, result.product]);
         }
       }
-      setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', image: null });
+      setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '',description: '' ,image: null });
       setIsModalOpen(false);
       setIsEditing(false);
       setEditIndex(null);
@@ -236,7 +259,7 @@ const ProductPage = () => {
   const handleEditProduct = (index, product) => {
     setEditIndex(index);
     setEditProductId(product._id);
-    setNewProduct({ name: product.name, price: product.price, edition: product.edition, category: product.category, quantity: product.quantity, image: product.images.url || null });
+    setNewProduct({ name: product.name, price: product.price, edition: product.edition, category: product.category, quantity: product.quantity,description: product.description ,image: product.images.url || null });
     setIsEditing(true);
     setIsModalOpen(true);
   };
@@ -244,12 +267,12 @@ const ProductPage = () => {
   const openModal = () => {
     setIsModalOpen(true);
     setIsEditing(false);
-    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', image: null });
+    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '',description: '' ,image: null });
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', image: null });
+    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '',description: '',image: null });
     setIsEditing(false);
     setEditIndex(null);
   };
@@ -265,12 +288,12 @@ const ProductPage = () => {
 
 
   //Sort
-  
+
   useEffect(() => {
     if (sortOrder) {
       handleSort();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortOrder]);
 
   const handleSort = async () => {
@@ -284,6 +307,17 @@ const ProductPage = () => {
     }
   };
 
+  // Handle price filtering
+  const handlePriceChange = (value) => {
+    setPriceRange(value);
+  };
+
+  useEffect(() => {
+    const filtered = products.filter(product =>
+      product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
+    setFilteredProducts(filtered);
+  }, [priceRange, products]);
 
 
   return (
@@ -327,13 +361,19 @@ const ProductPage = () => {
 
         {/* Filter Options */}
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2">Filter By Category:</label>
-          <select className="w-full p-2 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">All Categories</option>
-            <option value="category1">Category 1</option>
-            <option value="category2">Category 2</option>
-            {/* Add more categories as needed */}
-          </select>
+          <label className="block text-gray-700 font-semibold mb-2">Filter by Price:</label>
+          <Slider
+            range
+            value={priceRange}
+            min={0}
+            max={1000}
+            onChange={handlePriceChange}
+            className="w-full"
+          />
+          <div className="flex justify-between mt-2">
+            <span>₹{priceRange[0]}</span>
+            <span>₹{priceRange[1]}</span>
+          </div>
         </div>
 
         {/* Add Product Button */}
@@ -345,7 +385,7 @@ const ProductPage = () => {
       {/* Right Side for Product Cards */}
       <div className="flex-1 p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 bg-gray-50">
-          {products.map((product, index) => (
+          {currentProducts.map((product, index) => (
             <div
               key={product._id}
               className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 relative transform hover:scale-105 mx-auto"
@@ -376,6 +416,7 @@ const ProductPage = () => {
                 <p className="text-sm text-gray-600 mt-1">Edition: {product.edition}</p>
                 <p className="text-sm text-gray-600 mt-1">Category: {product.category}</p>
                 <p className="text-sm text-gray-600 mt-1">Quantity: {product.quantity}</p>
+                <p className="text-sm text-gray-600 mt-1">Description: {product.description}</p>
 
                 <div className="flex justify-center items-center mt-4 space-x-4">
                   <button
@@ -396,6 +437,17 @@ const ProductPage = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center py-10">
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={products.length}
+            onChange={handlePageChange}
+            showSizeChanger
+          />
         </div>
 
 

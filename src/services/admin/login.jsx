@@ -112,6 +112,7 @@ export const addProduct = async (values) => {
         formData.append('edition', values.edition)
         formData.append('category', values.category)
         formData.append('quantity', values.quantity)
+        formData.append('description',values.description)
         formData.append('images', values.image)
 
         const response = await instance.post('/admin/addProduct', formData, {
@@ -145,13 +146,15 @@ export const deleteProduct = async (id) => {
 };
 
 
-export const editProduct = async (id, name, price, edition, category, quantity, image) => {
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('price', price);
-    formData.append('edition', edition);
+export const editProduct = async (id, name, price, edition, category, quantity,description, image) => {
+    const formData = new FormData()
+    formData.append('name', name)
+    formData.append('price', price)
+    formData.append('edition', edition)
     formData.append('category', category)
     formData.append('quantity', quantity)
+    formData.append('description',description)
+
     formData.append('images', image);
 
     try {

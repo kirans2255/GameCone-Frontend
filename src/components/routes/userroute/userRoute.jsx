@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import UserLoginPage from '../../../pages/userpage/signuppage'
 import GamecamoPage from "../../../pages/userpage/home";
 import Login from '../../../pages/userpage/login'
+import Shop from '../../../pages/userpage/shop'
+import Single from '../../../pages/userpage/single'
 // import ProtectRoute from '../../../components/layout/ProtectRoute'
 // import AdminLayout from '../'
 
@@ -34,6 +36,8 @@ export default function UserRoutes() {
                         </Route>
                         <Route path='/home' element={<GamecamoPage />}></Route>
                         <Route path='/login' element={<Login />}></Route>
+                        <Route path='/shop' element={<Shop />}></Route>
+                        <Route path='/single/:id' element={<Single />}></Route>
                     </Routes>
                 </Router>
             {/* </ProtectRoute> */}

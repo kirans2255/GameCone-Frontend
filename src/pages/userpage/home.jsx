@@ -1,6 +1,7 @@
+/* eslint-disable react/no-unescaped-entities */
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa'
+// import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa'
 import { getProduct } from '../../services/admin/login';
 
 const GamecamoPage = () => {
@@ -39,14 +40,14 @@ const GamecamoPage = () => {
         </div>
         <ul className={`md:flex md:space-x-8 ${isOpen ? 'block' : 'hidden'} absolute md:static top-16 left-0 w-full bg-black md:bg-transparent z-20 md:z-auto p-4 md:p-0 md:justify-center`}>
           <li><a href="#" className="block py-2 md:py-0 hover:text-gray-400 text-lg md:text-xl">Home</a></li>
-          <li><a href="#" className="block py-2 md:py-0 hover:text-gray-400 text-lg md:text-xl">Accessories</a></li>
+          <li><a href="/shop" className="block py-2 md:py-0 hover:text-gray-400 text-lg md:text-xl">Accessories</a></li>
           <li><a href="#" className="block py-2 md:py-0 hover:text-gray-400 text-lg md:text-xl">About Us</a></li>
           <li><a href="#" className="block py-2 md:py-0 hover:text-gray-400 text-lg md:text-xl">Contact Us</a></li>
         </ul>
-        <div className="hidden md:flex space-x-4 text-white ">
-          <a href="#" className="hover:text-gray-400"><FaSearch /></a>
-          <a href="#" className="hover:text-gray-400"><FaShoppingCart /></a>
-          <a href="#" className="hover:text-gray-400"><FaUser /></a>
+        <div className="hidden md:flex space-x-5">
+          <a href="/" style={{ fontSize: '24px' }}>❤️</a>
+          <a href="/" style={{ fontSize: '24px' }}>🛒</a>
+          <a href="/" style={{ fontSize: '24px' }}>👤</a>
         </div>
       </nav>
 
@@ -64,7 +65,7 @@ const GamecamoPage = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Currently Trending Games</h2>
         <div className="flex flex-wrap justify-center md:justify-between">
           {products.map((product) => (
-            <div key={product.id} className="w-1/2 md:w-1/6 ">
+            <div key={product.id} className="w-1/2 md:w-1/6">
               <img
                 src={product.images.url}
                 alt={product.name}
