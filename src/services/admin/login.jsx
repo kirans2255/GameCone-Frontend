@@ -267,3 +267,21 @@ export const getSort = async (sortOrder) => {
     }
 }
 
+
+
+export const filterProducts = async (priceRange) => {
+    try {
+      const response = await instance.get('/admin/product/filter', {
+        params: {
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1]
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching filtered products:', error);
+      throw error;
+    }
+  };
+  
+

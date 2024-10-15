@@ -6,6 +6,7 @@ import GamecamoPage from "../../../pages/userpage/home";
 import Login from '../../../pages/userpage/login'
 import Shop from '../../../pages/userpage/shop'
 import Single from '../../../pages/userpage/single'
+import Cart from '../../../pages/userpage/cart'
 // import ProtectRoute from '../../../components/layout/ProtectRoute'
 // import AdminLayout from '../'
 
@@ -38,6 +39,8 @@ export default function UserRoutes() {
                         <Route path='/login' element={<Login />}></Route>
                         <Route path='/shop' element={<Shop />}></Route>
                         <Route path='/single/:id' element={<Single />}></Route>
+                        <Route path='/cart' element={<Cart />}></Route>
+
                     </Routes>
                 </Router>
             {/* </ProtectRoute> */}

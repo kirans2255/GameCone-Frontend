@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import { addCoupon, getCoupon, deleteCoupon, editCoupon ,statusCoupon} from '../../services/admin/login';
+import { addCoupon, getCoupon, deleteCoupon, editCoupon, statusCoupon } from '../../services/admin/login';
 
 const Modal = ({ isOpen, onClose, onSave, coupon, handleInputChange, isEditing }) => {
   if (!isOpen) return null;
@@ -259,7 +259,12 @@ const CouponPage = () => {
     setIsModalOpen(false);
   };
 
-  const handleStatusChange = async (index, coupon, newStatus) => {
+  const handleStatusChange = async (couponId, coupon, newStatus) => {
+    if (!couponId) {
+      console.error("Coupon ID is undefined");
+      return;
+    }
+
     try {
       const updatedCoupon = {
         Coupon_Name: coupon.Coupon_Name,
@@ -267,20 +272,22 @@ const CouponPage = () => {
         Coupon_Type: coupon.Coupon_Type,
         Start_Date: coupon.Start_Date,
         End_Date: coupon.End_Date,
-        Active_Status: newStatus 
+        Active_Status: newStatus
       };
-  
-      const result = await statusCoupon(coupon._id, updatedCoupon);
-  
+
+      const result = await statusCoupon(couponId, updatedCoupon);
+
       if (result.success) {
-        const updatedCoupons = [...coupons];
-        updatedCoupons[index] = result.coupon; 
+        const updatedCoupons = coupons.map(c =>
+          c._id === couponId ? { ...c, Active_Status: newStatus } : c
+        );
         setCoupons(updatedCoupons);
       }
     } catch (error) {
       console.error('Error updating status:', error.message);
     }
   };
+
 
   return (
     <div className="p-8">
@@ -313,14 +320,13 @@ const CouponPage = () => {
               <td className="border px-4 py-2">{coupon.Start_Date}</td>
               <td className="border px-4 py-2">{coupon.End_Date}</td>
               <td className="px-4 py-2 border">
-                <select
-                  value={coupon.Active_Status}
-                  onChange={(e) => handleStatusChange(index, coupon, e.target.value)}
-                  className="p-2 border rounded"
+                <button
+                  onClick={() => handleStatusChange(coupon._id, coupon, coupon.Active_Status === "active" ? "inactive" : "active")}
+                  className={`py-2 px-4 rounded ${coupon.Active_Status === "active" ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+                  {coupon.Active_Status === "active" ? 'Active' : 'InActive'}
+                </button>
+
               </td>
               <td className="border px-4 py-2 flex items-center space-x-4">
                 <button

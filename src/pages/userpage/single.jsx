@@ -5,11 +5,15 @@ import { useParams } from 'react-router-dom';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { FaHeart } from 'react-icons/fa';
 import single from '../../services/user/shop'
+import { addcart } from '../../services/user/cart';
 
 const GamecamoPage = () => {
     const [navOpen, setNavOpen] = useState(false);
-
     const [isInWishlist, setIsInWishlist] = useState(false);
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const [error, setError] = useState(null);
+
 
     // Toggle wishlist state
     const toggleWishlist = () => {
@@ -17,10 +21,7 @@ const GamecamoPage = () => {
         // Optional: Add logic here to save the wishlist state in the backend or localStorage
     }
 
-    const { id } = useParams();
-    const [product, setProduct] = useState(null);
-    const [error, setError] = useState(null);
-
+   
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -33,6 +34,36 @@ const GamecamoPage = () => {
 
         fetchProduct();
     }, [id]);
+
+    // const handleAddToCart = async () => {
+    //     if (product) {
+    //         const result = await addcart(product._id); // Use the product ID to add to cart
+    //         if (result.success) {
+    //             alert('Product added to cart successfully!'); // Notify user
+    //         } else {
+    //             alert(`Failed to add product to cart: ${result.message}`); // Notify error
+    //         }
+    //     }
+    // };
+
+    const handleAddToCart = async () => {
+        if (product) {
+            const productDetails = {
+                productId: product._id,
+                name: product.name, 
+                price: product.price,
+                quantity: 1, 
+                images: product.images 
+            };
+    
+            try {
+                const result = await addcart(productDetails); 
+            } catch (error) {
+                alert(`Failed to add product to cart: ${error.message}`) 
+            }
+        }
+    };
+    
 
     if (error) return <div className="text-red-500">{error}</div>; // Render error if any
     if (!product) return <div>Loading...</div>;
@@ -55,7 +86,7 @@ const GamecamoPage = () => {
 
                     <div className="hidden md:flex space-x-5">
                         <a href="/" style={{ fontSize: '24px' }}>❤️</a>
-                        <a href="/" style={{ fontSize: '24px' }}>🛒</a>
+                        <a href="/cart" style={{ fontSize: '24px' }}>🛒</a>
                         <a href="/" style={{ fontSize: '24px' }}>👤</a>
                     </div>
 
@@ -120,7 +151,7 @@ const GamecamoPage = () => {
 
                         {/* Add to Cart */}
                         <div className="flex items-center space-x-4 mt-6">
-                            <button className="bg-green-600 text-white px-5 py-2 rounded-full">Add to Cart</button>
+                            <button className="bg-green-600 text-white px-5 py-2 rounded-full" onClick={handleAddToCart}>Add to Cart</button>
                         </div>
                     </div>
                 </div>

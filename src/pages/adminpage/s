@@ -1,0 +1,49 @@
+const ProductPage = () => {
+    const [allProducts, setAllProducts] = useState([]);
+    const [products, setProducts] = useState([]);
+  
+    useEffect(() => {
+      const fetchProducts = async () => {
+        try {
+          const result = await getProduct(); // Fetch products from API
+          console.log("Fetched Products:", result.products);
+          setAllProducts(result.products);
+          setProducts(result.products); // Set initial products
+        } catch (error) {
+          console.error('Error fetching products:', error.message);
+        }
+      };
+  
+      fetchProducts();
+    }, []);
+  
+    const handleFilter = (filterCriteria) => {
+      const filteredProducts = allProducts.filter(product =>
+        product.category === filterCriteria // Example filter
+      );
+      setProducts(filteredProducts); // Set filtered products
+    };
+  
+    const resetFilters = () => {
+      setProducts(allProducts); // Reset to all products
+    };
+  
+    return (
+      <div>
+        {/* Filter UI here, e.g., dropdown or buttons */}
+        <button onClick={resetFilters}>Reset Filters</button>
+        
+        <h1>Products</h1>
+        {products.length === 0 ? (
+          <p>No products available.</p>
+        ) : (
+          <ul>
+            {products.map((product) => (
+              <li key={product._id}>{product.name}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  };
+  

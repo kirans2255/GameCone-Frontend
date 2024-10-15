@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
-import { addProduct, getProduct, editProduct, deleteProduct, getCategories, searchProducts, getSort } from '../../services/admin/login'; // Ensure to import the necessary functions
+import { addProduct, getProduct, editProduct, deleteProduct, getCategories, searchProducts, getSort, filterProducts } from '../../services/admin/login'; // Ensure to import the necessary functions
 import { Pagination } from 'antd';
 import { Slider } from 'antd';
 // import ProductPages from '../adminpage/sort'
@@ -81,7 +81,7 @@ const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFile
             className="w-full p-2 border rounded"
           />
         </div>
-          
+
         <div className="mb-4">
           <label className="block mb-2 font-semibold">Product Description</label>
           <input
@@ -135,8 +135,8 @@ const ProductPage = () => {
   const [sortOrder, setSortOrder] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(6);
-  const [priceRange, setPriceRange] = useState([0, 1000]); // Default price range
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, 1000]);
 
   // const [selectedCategory, setSelectedCategory] = useState('');
   // console.log("c",categories)
@@ -168,14 +168,22 @@ const ProductPage = () => {
     try {
       const result = await getProduct();
       setProducts(result.products);
+      setFilteredProducts(result.products);
     } catch (error) {
       console.error('Error fetching products:', error.message);
     }
   };
 
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
+
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
+
 
   const handleInputChange = (e) => {
     setNewProduct({
@@ -207,7 +215,7 @@ const ProductPage = () => {
     try {
       if (isEditing) {
         console.log('newproduct:', newProduct);
-        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition, newProduct.category, newProduct.quantity,newProduct.description ,newProduct.image);
+        const result = await editProduct(editProductId, newProduct.name, newProduct.price, newProduct.edition, newProduct.category, newProduct.quantity, newProduct.description, newProduct.image);
         fetchProducts();
         console.log("result :", result)
 
@@ -223,7 +231,7 @@ const ProductPage = () => {
           setProducts([...products, result.product]);
         }
       }
-      setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '',description: '' ,image: null });
+      setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', description: '', image: null });
       setIsModalOpen(false);
       setIsEditing(false);
       setEditIndex(null);
@@ -259,7 +267,7 @@ const ProductPage = () => {
   const handleEditProduct = (index, product) => {
     setEditIndex(index);
     setEditProductId(product._id);
-    setNewProduct({ name: product.name, price: product.price, edition: product.edition, category: product.category, quantity: product.quantity,description: product.description ,image: product.images.url || null });
+    setNewProduct({ name: product.name, price: product.price, edition: product.edition, category: product.category, quantity: product.quantity, description: product.description, image: product.images.url || null });
     setIsEditing(true);
     setIsModalOpen(true);
   };
@@ -267,12 +275,12 @@ const ProductPage = () => {
   const openModal = () => {
     setIsModalOpen(true);
     setIsEditing(false);
-    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '',description: '' ,image: null });
+    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', description: '', image: null });
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '',description: '',image: null });
+    setNewProduct({ name: '', price: '', edition: '', category: '', quantity: '', description: '', image: null });
     setIsEditing(false);
     setEditIndex(null);
   };
@@ -307,17 +315,21 @@ const ProductPage = () => {
     }
   };
 
-  // Handle price filtering
+
   const handlePriceChange = (value) => {
     setPriceRange(value);
   };
 
-  useEffect(() => {
-    const filtered = products.filter(product =>
-      product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-    setFilteredProducts(filtered);
-  }, [priceRange, products]);
+  const handlePriceFilter = async () => {
+    try {
+      const result = await filterProducts(priceRange); // Replace with your backend function
+      if (result.success) {
+        setFilteredProducts(result.products);
+      }
+    } catch (error) {
+      console.error('Error fetching filtered products:', error.message);
+    }
+  };
 
 
   return (
@@ -365,15 +377,22 @@ const ProductPage = () => {
           <Slider
             range
             value={priceRange}
+            onChange={handlePriceChange}
             min={0}
             max={1000}
-            onChange={handlePriceChange}
-            className="w-full"
+            step={10}
+            className="mb-4"
           />
-          <div className="flex justify-between mt-2">
-            <span>₹{priceRange[0]}</span>
-            <span>₹{priceRange[1]}</span>
+          <div className="flex justify-between">
+            <span>${priceRange[0]}</span>
+            <span>${priceRange[1]}</span>
           </div>
+          <button
+            onClick={handlePriceFilter}
+            className="bg-green-600 text-white px-4 py-2 rounded mt-2"
+          >
+            Apply Filter
+          </button>
         </div>
 
         {/* Add Product Button */}
