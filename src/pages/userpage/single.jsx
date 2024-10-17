@@ -18,7 +18,6 @@ const GamecamoPage = () => {
     // Toggle wishlist state
     const toggleWishlist = () => {
         setIsInWishlist(!isInWishlist);
-        // Optional: Add logic here to save the wishlist state in the backend or localStorage
     }
 
    

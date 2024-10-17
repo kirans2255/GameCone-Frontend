@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import instance from "../../utils/axios";
 
 export const Login = async (values) => {

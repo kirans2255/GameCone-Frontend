@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
-import  {cart}  from '../../services/user/cart'
+import { cart, deleteCart } from '../../services/user/cart'
 
 const CartPage = () => {
     const [quantity, setQuantity] = useState(1);
-    const [products, setProducts] = useState([]); 
+    const [products, setProducts] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
     const fetchCart = async () => {
         try {
-            const result = await cart(); 
+            const result = await cart();
             if (result && result.cart) {
-                setProducts(result.cart.products); 
+                setProducts(result.cart.products);
             }
         } catch (error) {
             console.error('Error fetching cart:', error.message);
@@ -23,20 +23,36 @@ const CartPage = () => {
         fetchCart();
     }, []);
 
-    const handleIncrease = (index) => {
-        const updatedProducts = [...products];
-        updatedProducts[index].quantity += 1;
-        setProducts(updatedProducts);
-    };
-
-    const handleDecrease = (index) => {
-        if (products[index].quantity > 1) {
-            const updatedProducts = [...products];
-            updatedProducts[index].quantity -= 1;
-            setProducts(updatedProducts);
+    const handleDeleteCart = async (product) => {
+        try {
+            const result = await deleteCart(product._id);
+            fetchCart();
+            if (result.success) {
+                await fetchCart();
+                setProducts(products.filter(p => p._id !== product._id));
+            } else {
+                console.error(result.mess);
+            }
+        } catch (error) {
+            console.error('Error deleting cart:', error.message);
         }
     };
-    
+
+
+    // const handleIncrease = (index) => {
+    //     const updatedProducts = [...products];
+    //     updatedProducts[index].quantity += 1;
+    //     setProducts(updatedProducts);
+    // };
+
+    // const handleDecrease = (index) => {
+    //     if (products[index].quantity > 1) {
+    //         const updatedProducts = [...products];
+    //         updatedProducts[index].quantity -= 1;
+    //         setProducts(updatedProducts);
+    //     }
+    // };
+
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -78,7 +94,7 @@ const CartPage = () => {
                             <div key={product._id} className="flex items-center justify-between mb-4">
                                 <div className="flex items-center">
                                     <img
-                                        src={product.image}
+                                        src={product.images.url}
                                         alt={product.name}
                                         className="w-32 h-32 object-cover rounded-lg"
                                     />
@@ -87,23 +103,8 @@ const CartPage = () => {
                                         <p className="text-lg text-gray-400 mt-2">₹ {product.price}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center">
-                                    {/* Quantity Controls */}
-                                    <button
-                                        className="bg-red-600 text-white px-2 py-1 rounded-lg text-lg font-bold"
-                                        onClick={() => handleDecrease(index)}
-                                    >
-                                        -
-                                    </button>
-                                    <span className="mx-4 text-lg">{product.quantity || 1}</span>
-                                    <button
-                                        className="bg-green-600 text-white px-2 py-1 rounded-lg text-lg font-bold"
-                                        onClick={() => handleIncrease(index)}
-                                    >
-                                        +
-                                    </button>
-                                </div>
-                                <FaTrashAlt className="text-red-500 cursor-pointer ml-6" />
+                   
+                                <FaTrashAlt className="text-red-500 cursor-pointer ml-6" onClick={() => handleDeleteCart(product)} />
                             </div>
                         ))
                     ) : (
@@ -117,16 +118,25 @@ const CartPage = () => {
                         <h3 className="text-2xl font-semibold mb-4">Billing Information</h3>
                         <div className="mb-4">
                             {products.map((product) => (
-                                <div key={product._id}>
+                                <div key={product._id} className="flex justify-between items-center">
                                     <p className="text-lg">{product.name}</p>
-                                    <p className="mt-2">Delivery: <span className="font-semibold">Free</span></p>
+                                    <p className="text-lg font-semibold">₹ {product.price}</p>
                                 </div>
                             ))}
+
+                            {/* Delivery Fee Section */}
                             <div className="flex justify-between mt-4 text-lg">
+                                <p>Delivery Fee</p>
+                                {/* <p>₹ {deliveryFee}</p> */}
+                            </div>
+
+                            {/* Total Cash Section */}
+                            <div className="flex justify-between mt-2 text-lg font-bold">
                                 <p>Total Cash</p>
                                 <p>₹ {products.reduce((acc, product) => acc + product.price * product.quantity, 0)}</p>
                             </div>
                         </div>
+
                         <button className="bg-green-600 text-white py-3 rounded-lg w-full mt-4 hover:bg-green-700 transition-all duration-300">
                             Continue
                         </button>
