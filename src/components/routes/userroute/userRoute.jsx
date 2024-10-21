@@ -7,6 +7,8 @@ import Login from '../../../pages/userpage/login'
 import Shop from '../../../pages/userpage/shop'
 import Single from '../../../pages/userpage/single'
 import Cart from '../../../pages/userpage/cart'
+import User from '../../../pages/userpage/user'
+
 // import ProtectRoute from '../../../components/layout/ProtectRoute'
 // import AdminLayout from '../'
 
@@ -40,6 +42,7 @@ export default function UserRoutes() {
                         <Route path='/shop' element={<Shop />}></Route>
                         <Route path='/single/:id' element={<Single />}></Route>
                         <Route path='/cart' element={<Cart />}></Route>
+                        <Route path='/user' element={<User />}></Route>
 
                     </Routes>
                 </Router>

@@ -8,7 +8,6 @@ import { Slider } from 'antd';
 // import ProductPages from '../adminpage/sort'
 
 const Modal = ({ isOpen, onClose, onSave, product, handleInputChange, handleFileChange, isEditing, categories }) => {
-  // eslint-disable-next-line no-unused-vars
   // const [categories, setCategories] = useState([]);
 
 

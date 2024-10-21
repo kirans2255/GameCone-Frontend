@@ -3,7 +3,7 @@ import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 // import { Typography, Box } from '@mui/material';
 import { FaPhoneAlt } from 'react-icons/fa';
-import Signup from '../../services/user/signup';
+import  Signup  from '../../services/user/signup';
 import GoogleSignIn from './google';
 
 
@@ -21,7 +21,7 @@ const SignupForm = () => {
             <h2 className="mt-6 text-left text-5xl font-bold">Get Started Now</h2>
           </div>
           <Formik
-            initialValues={{ name: '', email: '', password: '', terms: false }}
+            initialValues={{ name: '', email: '', phoneNumber: '' , password: '', terms: false }}
             validate={values => {
               const errors = {};
               if (!values.email) {
@@ -33,6 +33,9 @@ const SignupForm = () => {
               }
               if (!values.password) {
                 errors.password = 'Password is required';
+              }
+              if (!values.phoneNumber) {
+                errors.phoneNumber = 'Mobile Number is required';
               }
               if (!values.name) {
                 errors.name = 'Name is required';
@@ -103,6 +106,24 @@ const SignupForm = () => {
                   />
                   {errors.email && touched.email && (
                     <div className="text-red-500 text-sm mt-1">{errors.email}</div>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="sr-only">
+                    Phone Number
+                  </label>
+                  <input
+                    type="number"
+                    name="phoneNumber"
+                    placeholder="Enter your Number"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.phoneNumber}
+                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-black text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                  {errors.phoneNumber && touched.phoneNumber && (
+                    <div className="text-red-500 text-sm mt-1">{errors.phoneNumber}</div>
                   )}
                 </div>
 
