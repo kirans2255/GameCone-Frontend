@@ -59,7 +59,7 @@ const ShopPage = () => {
                 <div className="hidden md:flex space-x-5">
                     <a href="/" style={{ fontSize: '24px' }}>❤️</a>
                     <a href="/cart" style={{ fontSize: '24px' }}>🛒</a>
-                    <a href="/" style={{ fontSize: '24px' }}>👤</a>
+                    <a href="/user" style={{ fontSize: '24px' }}>👤</a>
                 </div>
 
                 {/* Hamburger Menu for Mobile */}

@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { FaHeart } from 'react-icons/fa';
 import single from '../../services/user/shop'
-import { addcart } from '../../services/user/cart';
+import { addcart, cart } from '../../services/user/cart';
+import { addwishlist, wishlist, deleteWishlist } from '../../services/user/wishlist';
 
 const GamecamoPage = () => {
     const [navOpen, setNavOpen] = useState(false);
@@ -13,56 +14,87 @@ const GamecamoPage = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [error, setError] = useState(null);
+    const [isAddedToCart, setIsAddedToCart] = useState(false);
+    const navigate = useNavigate();
 
 
-    // Toggle wishlist state
-    const toggleWishlist = () => {
-        setIsInWishlist(!isInWishlist);
-    }
 
-   
     useEffect(() => {
-        const fetchProduct = async () => {
+        const fetchProductAndCart = async () => {
             try {
                 const productData = await single(id);
                 setProduct(productData);
+
+                const cartData = await cart();
+
+                const isProductInCart = cartData.cart.products.some(cartItem => cartItem.productId === productData._id);
+                setIsAddedToCart(isProductInCart)
             } catch (error) {
-                setError('Could not fetch product details.');
+                setError('Could not fetch product or cart details.');
             }
         };
 
-        fetchProduct();
+        fetchProductAndCart();
     }, [id]);
-
-    // const handleAddToCart = async () => {
-    //     if (product) {
-    //         const result = await addcart(product._id); // Use the product ID to add to cart
-    //         if (result.success) {
-    //             alert('Product added to cart successfully!'); // Notify user
-    //         } else {
-    //             alert(`Failed to add product to cart: ${result.message}`); // Notify error
-    //         }
-    //     }
-    // };
 
     const handleAddToCart = async () => {
         if (product) {
             const productDetails = {
                 productId: product._id,
-                name: product.name, 
+                name: product.name,
                 price: product.price,
-                quantity: 1, 
-                images: product.images 
+                quantity: 1,
+                images: product.images
             };
-    
+
             try {
-                const result = await addcart(productDetails); 
+                const result = await addcart(productDetails);
+                if (result.success) {
+                    setIsAddedToCart(true);
+                }
             } catch (error) {
-                alert(`Failed to add product to cart: ${error.message}`) 
+                alert(`Failed to add product to cart: ${error.message}`);
             }
         }
     };
-    
+
+    ;
+
+    const handleAddToWishlist = async () => {
+        if (product) {
+            const productDetails = {
+                productId: product._id,
+                name: product.name,
+                price: product.price,
+                quantity: 1,
+                images: product.images
+            };
+
+            try {
+                let result;
+                if (isInWishlist) {
+                    result = await deleteWishlist(productDetails.productId);
+                    if (result.success) {
+                        setIsInWishlist(false);
+                    }
+                } else {
+                    result = await addwishlist(productDetails);
+                    if (result.success) {
+                        setIsInWishlist(true);
+                    }
+                }
+            } catch (error) {
+                alert(`Failed to toggle product in Wishlist: ${error.message}`);
+            }
+        }
+    };
+
+
+
+    const handleGoToCart = () => {
+        navigate('/cart'); // Navigate to the cart page
+    }
+
 
     if (error) return <div className="text-red-500">{error}</div>; // Render error if any
     if (!product) return <div>Loading...</div>;
@@ -84,9 +116,9 @@ const GamecamoPage = () => {
                     </nav>
 
                     <div className="hidden md:flex space-x-5">
-                        <a href="/" style={{ fontSize: '24px' }}>❤️</a>
+                        <a href="/wishlist" style={{ fontSize: '24px' }}>❤️</a>
                         <a href="/cart" style={{ fontSize: '24px' }}>🛒</a>
-                        <a href="/" style={{ fontSize: '24px' }}>👤</a>
+                        <a href="/user" style={{ fontSize: '24px' }}>👤</a>
                     </div>
 
                     {/* Hamburger Menu */}
@@ -125,18 +157,9 @@ const GamecamoPage = () => {
                         <h1 className="text-4xl font-bold flex items-center">
                             {product.name}
                             {/* Wishlist Button */}
-                            <button
-                                className="focus:outline-none ml-5"
-                                onClick={toggleWishlist}
-                            >
+                            <button className="focus:outline-none ml-5" onClick={handleAddToWishlist}>
                                 <FaHeart
-                                    className={`w-8 h-8 transition-colors duration-300 ${isInWishlist ? 'text-red-500' : 'text-white'} `}
-                                    style={{
-                                        stroke: 'black',
-                                        strokeWidth: 20,
-                                        fill: isInWishlist ? 'red' : 'white',
-                                        outline: 'black',
-                                    }}
+                                    className={`w-8 h-8 transition-colors duration-300 ${isInWishlist ? 'text-red-500' : 'text-black'}`}
                                 />
                             </button>
                         </h1>
@@ -150,7 +173,15 @@ const GamecamoPage = () => {
 
                         {/* Add to Cart */}
                         <div className="flex items-center space-x-4 mt-6">
-                            <button className="bg-green-600 text-white px-5 py-2 rounded-full" onClick={handleAddToCart}>Add to Cart</button>
+                            {isAddedToCart ? (
+                                <button className="bg-white text-black-800 font-bold border border-green-600 px-5 py-2 rounded-full" onClick={handleGoToCart}>
+                                    🛒   Go to Cart
+                                </button>
+                            ) : (
+                                <button className="bg-green-600 text-white px-5 py-2 rounded-full" onClick={handleAddToCart}>
+                                    Add to Cart
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

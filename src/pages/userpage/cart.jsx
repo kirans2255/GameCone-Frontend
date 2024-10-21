@@ -8,6 +8,10 @@ const CartPage = () => {
     const [products, setProducts] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
+    const toggleMenu = () => {
+        setIsOpen(!isOpen);
+    };
+
     const fetchCart = async () => {
         try {
             const result = await cart();
@@ -54,9 +58,7 @@ const CartPage = () => {
     // };
 
 
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
+
 
     return (
         <div className="min-h-screen bg-black text-white p-4">
@@ -76,7 +78,7 @@ const CartPage = () => {
                     <li><a href="#" className="block py-2 md:py-0 hover:text-gray-400 text-lg md:text-xl">Contact Us</a></li>
                 </ul>
                 <div className="hidden md:flex space-x-5">
-                    <a href="/" style={{ fontSize: '24px' }}>❤️</a>
+                    <a href="/wishlist" style={{ fontSize: '24px' }}>❤️</a>
                     <a href="/cart" style={{ fontSize: '24px' }}>🛒</a>
                     <a href="/user" style={{ fontSize: '24px' }}>👤</a>
                 </div>
