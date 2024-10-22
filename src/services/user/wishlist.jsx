@@ -18,10 +18,10 @@ export const addwishlist= async (productDetails) => {
         const response = await instance.post('/addwishlist', productDetails,
             { withCredentials: true }
         );
-        console.log('Product added to cart:', response.data);
+        console.log('Product added to wishlist:', response.data);
         return response.data;
     } catch (error) {
-        console.error('Error adding product to cart:', error.response.data.message);
+        console.error('Error adding product to wishlist:', error.response.data.message);
     }
 }
 
@@ -33,6 +33,8 @@ export const deleteWishlist = async (productId) => {
         });
         return response.data
     } catch (error) {
-        console.error('Error Deleting Product from Cart',error.data.message)
+        const errorMessage = error?.response?.data?.message || 'Failed to remove product from wishlist';
+        console.error('Error removing product from wishlist:', errorMessage);
+        throw new Error(errorMessage);
     }
 } 

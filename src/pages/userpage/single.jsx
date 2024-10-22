@@ -58,45 +58,46 @@ const GamecamoPage = () => {
         }
     };
 
-    ;
 
-    const handleAddToWishlist = async () => {
-        if (product) {
-            const productDetails = {
-                productId: product._id,
-                name: product.name,
-                price: product.price,
-                quantity: 1,
-                images: product.images
-            };
 
-            try {
-                let result;
-                if (isInWishlist) {
-                    result = await deleteWishlist(productDetails.productId);
-                    if (result.success) {
-                        setIsInWishlist(false);
-                    }
+
+    const handleToggleWishlist = async () => {
+        const productDetails = {
+            productId: product._id,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            images: product.images
+        };
+
+        try {
+            if (isInWishlist) {
+                // Remove from wishlist
+                const result = await deleteWishlist(product._id);
+                if (result.success) {
+                    setIsInWishlist(false);
                 } else {
-                    result = await addwishlist(productDetails);
-                    if (result.success) {
-                        setIsInWishlist(true);
-                    }
+                    console.error(result.message);
                 }
-            } catch (error) {
-                alert(`Failed to toggle product in Wishlist: ${error.message}`);
+            } else {
+                // Add to wishlist
+                const result = await addwishlist(productDetails);
+                if (result.success) {
+                    setIsInWishlist(true);
+                }
             }
+        } catch (error) {
+            alert(`Failed to toggle wishlist: ${error.message}`);
         }
     };
 
 
-
     const handleGoToCart = () => {
-        navigate('/cart'); // Navigate to the cart page
+        navigate('/cart');
     }
 
 
-    if (error) return <div className="text-red-500">{error}</div>; // Render error if any
+    if (error) return <div className="text-red-500">{error}</div>;
     if (!product) return <div>Loading...</div>;
 
     return (
@@ -157,10 +158,8 @@ const GamecamoPage = () => {
                         <h1 className="text-4xl font-bold flex items-center">
                             {product.name}
                             {/* Wishlist Button */}
-                            <button className="focus:outline-none ml-5" onClick={handleAddToWishlist}>
-                                <FaHeart
-                                    className={`w-8 h-8 transition-colors duration-300 ${isInWishlist ? 'text-red-500' : 'text-black'}`}
-                                />
+                            <button className="focus:outline-none ml-5" onClick={handleToggleWishlist}>
+                                <FaHeart className={`w-8 h-8 transition-colors duration-300 ${isInWishlist ? 'text-red-500' : 'text-gray-400'}`} />
                             </button>
                         </h1>
                         <p className="text-xl text-gray-500 mt-4">{product.category}</p>
