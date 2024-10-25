@@ -4,12 +4,21 @@ import { FiMenu, FiX } from 'react-icons/fi';
 import { getProduct } from '../../services/admin/login';
 import { useNavigate } from 'react-router-dom';
 import { Pagination } from 'antd';
+import { getSort, filterProducts, searchProducts } from '../../services/admin/login';
+import { FaSearch } from 'react-icons/fa';
+import { Slider } from 'antd';
 
 const ShopPage = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(6);
+    const [sortOrder, setSortOrder] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [priceRange, setPriceRange] = useState([0, 1000]);
+    const [searchTerm, setSearchTerm] = useState('');
+
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -40,9 +49,59 @@ const ShopPage = () => {
         setPageSize(pageSize);
     };
 
-    // Get the products for the current page
-    const currentProducts = products.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
+    useEffect(() => {
+        if (sortOrder) {
+            handleSort();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sortOrder]);
+
+    const handleSort = async () => {
+        try {
+            console.log('Current sort order:', sortOrder);
+            const result = await getSort(sortOrder);
+            console.log('Fetched products:', result);
+            setProducts(result.products);
+        } catch (error) {
+            console.error('Error fetching sorted products:', error.message);
+        }
+    };
+
+    const handleSearch = async () => {
+        try {
+            const result = await searchProducts(searchTerm);
+            setProducts(result.products);
+            setCategories(result.categories)
+        } catch (error) {
+            console.error('Error searching products:', error.message);
+        }
+    };
+
+    useEffect(() => {
+        setFilteredProducts(products);
+    }, [products]);
+
+
+
+    const handlePriceChange = (value) => {
+        setPriceRange(value);
+    };
+
+    const handlePriceFilter = async () => {
+        try {
+            const result = await filterProducts(priceRange);
+            if (result.success) {
+                setFilteredProducts(result.products);
+            }
+        } catch (error) {
+            console.error('Error fetching filtered products:', error.message);
+        }
+    };
+
+
+    // Get the products for the current page
+    const currentProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
     return (
         <div className="bg-black text-white">
             {/* Header */}
@@ -80,43 +139,95 @@ const ShopPage = () => {
                 </nav>
             )}
 
-            {/* Banner Section */}
-            <section className="text-center py-12">
-                <h2 className="text-4xl font-bold">Our Impressive Collection of Games</h2>
-                <p className="text-gray-400 mt-4">Ranging from the latest PS5 games to Xbox adventures, we have it all!</p>
-                <div className="flex justify-center space-x-3 mt-5">
-                    <button className="px-4 py-2 bg-white text-black rounded-full">Popular Products</button>
-                    <button className="px-4 py-2 bg-gray-800 text-white rounded-full">Consoles</button>
-                    <button className="px-4 py-2 bg-gray-800 text-white rounded-full">VR</button>
-                    <button className="px-4 py-2 bg-gray-800 text-white rounded-full">More</button>
-                </div>
-            </section>
+            {/* Main Content Area */}
+            <div className="flex px-10 py-10">
+                <aside className="w-full lg:w-1/4 p-6 bg-gray-900 shadow-lg">
+                    <h2 className="text-2xl font-bold mb-6">Filter & Sort</h2>
 
-            {/* Product Grid */}
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-10 px-5 py-10">
-                {currentProducts.map((product) => (
-                    <div key={product.id} className="relative">
-                        <div className="bg-gray-800 rounded-lg p-5 relative shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 w-[400px] mx-auto">
-                            <img src={product.images.url} alt={product.name} className="w-full h-72 object-cover rounded-lg" />
-                            <h3 className="text-lg font-semibold mt-4">{product.name}</h3>
+                    {/* Search Bar */}
+                    <div className="flex space-x-4 mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search by name"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full p-2 border rounded text-black"
+                        />
+                        <button
+                            onClick={handleSearch}
+                            className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+                        >
+                            <FaSearch className="mr-2" /> Search
+                        </button>
+                    </div>
 
-                            {/* Price Tag */}
-                            <div className="absolute top-4 right-4 bg-orange-500 px-3 py-1 rounded-full shadow-md text-lg font-bold text-white">
-                                ₹{product.price}
-                            </div>
+                    {/* Sort Options */}
+                    <div className="mb-6">
+                        <label className="block font-semibold mb-2">Sort By:</label>
+                        <select
+                            value={sortOrder}
+                            onChange={(e) => setSortOrder(e.target.value)}
+                            className="w-full p-2 border rounded bg-gray-700 text-white focus:outline-none"
+                        >
+                            <option value="">Select Sorting</option>
+                            <option value="priceLowToHigh">Price: Low to High</option>
+                            <option value="priceHighToLow">Price: High to Low</option>
+                            <option value="nameAtoZ">Name: A to Z</option>
+                            <option value="nameZtoA">Name: Z to A</option>
+                        </select>
+                    </div>
 
-                            <div className="flex space-x-2 mt-4">
-                                <button
-                                    className="flex-1 bg-black hover:bg-orange-500 text-white text-lg py-2 rounded-lg transition duration-300"
-                                    onClick={() => handleRentNow(product._id)}
-                                >
-                                    Rent Now
-                                </button>
+                    {/* Price Filter */}
+                    <div className="mb-6">
+                        <label className="block font-semibold mb-2">Filter by Price:</label>
+                        <Slider
+                            range
+                            value={priceRange}
+                            onChange={handlePriceChange}
+                            min={0}
+                            max={1000}
+                            step={10}
+                            className="mb-4"
+                        />
+                        <div className="flex justify-between">
+                            <span>${priceRange[0]}</span>
+                            <span>${priceRange[1]}</span>
+                        </div>
+                        <button
+                            onClick={handlePriceFilter}
+                            className="bg-green-600 text-white px-4 py-2 rounded mt-2 w-full"
+                        >
+                            Apply Filter
+                        </button>
+                    </div>
+                </aside>
+
+                {/* Product Grid */}
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-10 w-full ml-6">
+                    {currentProducts.map((product) => (
+                        <div key={product.id} className="relative">
+                            <div className="bg-gray-800 rounded-lg p-5 relative shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300">
+                                <img src={product.images.url} alt={product.name} className="w-full h-72 object-cover rounded-lg" />
+                                <h3 className="text-lg font-semibold mt-4">{product.name}</h3>
+
+                                {/* Price Tag */}
+                                <div className="absolute top-4 right-4 bg-orange-500 px-3 py-1 rounded-full shadow-md text-lg font-bold text-white">
+                                    ₹{product.price}
+                                </div>
+
+                                <div className="flex space-x-2 mt-4">
+                                    <button
+                                        className="flex-1 bg-black hover:bg-orange-500 text-white text-lg py-2 rounded-lg transition duration-300"
+                                        onClick={() => handleRentNow(product._id)}
+                                    >
+                                        Rent Now
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </section>
+                    ))}
+                </section>
+            </div>
 
             {/* Pagination */}
             <div className="flex justify-center py-10">
@@ -153,6 +264,7 @@ const ShopPage = () => {
                 </div>
             </footer>
         </div>
+
     );
 };
 

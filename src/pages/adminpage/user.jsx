@@ -24,15 +24,15 @@ const UserPage = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token')
-        if(!token){
+        if (!token) {
             Navigate('/admin/login')
         }
-    },[Navigate])
-    
+    }, [Navigate])
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         Navigate('/admin/login');
-      };
+    };
 
     const handleToggleBlockUser = async (userId) => {
         console.log("user:", userId);
@@ -40,10 +40,10 @@ const UserPage = () => {
         try {
             const updatedUser = await toggle(userId);
 
-             fetchUsers();
+            fetchUsers();
 
             setUsers(users.map(user => user.id === userId ? updatedUser : user));
-            
+
             // localStorage.removeItem('token');
             // navigate('/admin/user');
         } catch (error) {
