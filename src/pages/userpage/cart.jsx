@@ -105,7 +105,7 @@ const CartPage = () => {
                                         <p className="text-lg text-gray-400 mt-2">₹ {product.price}</p>
                                     </div>
                                 </div>
-                   
+
                                 <FaTrashAlt className="text-red-500 cursor-pointer ml-6" onClick={() => handleDeleteCart(product)} />
                             </div>
                         ))
@@ -139,9 +139,10 @@ const CartPage = () => {
                             </div>
                         </div>
 
-                        <button className="bg-green-600 text-white py-3 rounded-lg w-full mt-4 hover:bg-green-700 transition-all duration-300">
+                        <a href="/payment"
+                            className="bg-green-600 text-white py-3 rounded-lg w-full mt-4 hover:bg-green-700 transition-all duration-300 inline-block text-center">
                             Continue
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

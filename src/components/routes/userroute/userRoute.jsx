@@ -9,6 +9,7 @@ import Single from '../../../pages/userpage/single'
 import Cart from '../../../pages/userpage/cart'
 import User from '../../../pages/userpage/user'
 import Wishlist from '../../../pages/userpage/wishlist'
+import Billing from '../../../pages/userpage/Billing'
 
 // import ProtectRoute from '../../../components/layout/ProtectRoute'
 // import AdminLayout from '../'
@@ -45,6 +46,7 @@ export default function UserRoutes() {
                         <Route path='/cart' element={<Cart />}></Route>
                         <Route path='/user' element={<User />}></Route>
                         <Route path='/wishlist' element={<Wishlist />}></Route>
+                        <Route path='/payment' element={<Billing />}></Route>
 
                     </Routes>
                 </Router>

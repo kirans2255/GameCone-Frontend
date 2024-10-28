@@ -82,6 +82,7 @@ const GamecamoPage = () => {
             } else {
                 // Add to wishlist
                 const result = await addwishlist(productDetails);
+                
                 if (result.success) {
                     setIsInWishlist(true);
                 }
